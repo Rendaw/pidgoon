@@ -2,7 +2,7 @@ package com.zarbosoft.undepurseable.internal;
 
 public abstract class BaseParent implements Parent {
 
-	private Parent parent;
+	protected Parent parent;
 
 	public BaseParent(Parent parent) {
 		super();

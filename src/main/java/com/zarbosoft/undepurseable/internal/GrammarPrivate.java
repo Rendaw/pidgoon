@@ -21,7 +21,7 @@ public class GrammarPrivate {
 	
 	public Deque<Object> parse(String node, InputStream stream) throws IOException {
 		Position position = new Position(this, stream);
-		getNode(node).context(position, new Store(), new Parent() {
+		getNode(node).context(position, new Parent() {
 			@Override
 			public void error(Position position, String string) {
 				position.errors.add(string);
@@ -35,6 +35,12 @@ public class GrammarPrivate {
 			@Override
 			public String buildPath(String rep) {
 				return node + " " + rep;
+			}
+
+			@Override
+			public Parent clone(Parent stopAt) {
+				assert(false);
+				return null;
 			}
 		});
 		List<TerminalContext> leaves = position.leaves;

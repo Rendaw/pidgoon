@@ -48,7 +48,9 @@ public class GrammarParser {
 			new Capture(
 				new Reference("identifier"),
 				(store) -> {
+					System.out.println(String.format("hi %d", store.stack.size()));
 					store.stack.addLast(store.dataString());
+					System.out.println(String.format("hi %d", store.stack.size()));
 				}));
 		g.add(
 			"expression", 

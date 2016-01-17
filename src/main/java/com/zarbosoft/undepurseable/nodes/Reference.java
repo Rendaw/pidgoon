@@ -13,26 +13,33 @@ import com.zarbosoft.undepurseable.internal.Store;
 public class Reference extends Node {
 
 	public class RefParent implements Parent {
-		private Store startStore;
+		Parent originalParent;
 		List<Parent> parents = new ArrayList<>();
 
-		public RefParent(Parent parent, Store startStore) {
-			this.startStore = startStore;
-			parents.add(parent);
+		public RefParent(Parent parent) {
+			originalParent = parent;
 		}
 
 		public void advance(Position position, Store store) {
-			if (drop) store.dropData(startStore);
-			parents.forEach(p -> p.advance(position, store));
+			if (drop) store = store.drop();
+			originalParent.advance(position, store.split());
+			for (Parent p : parents)
+				p.clone(this).advance(position, store.split());
 		}
 
 		public String buildPath(String subpath) {
-			return parents.get(0).buildPath(String.format("<%s>.%s", name, subpath));
+			return originalParent.buildPath(String.format("<%s>.%s", name, subpath));
 		}
 
 		@Override
 		public void error(Position position, String string) {
-			parents.get(0).error(position, string);
+			originalParent.error(position, string);
+		}
+
+		@Override
+		public Parent clone(Parent stopAt) {
+			if (stopAt == this) return this;
+			return new RefParent(originalParent.clone(stopAt));
 		}
 	}
 
@@ -53,16 +60,15 @@ public class Reference extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store startStore, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
 		if (seen.containsKey(name)) {
 			seen.get(name).parents.add(parent);
 			return;
 		}
-		RefParent subParent = new RefParent(parent, startStore);
+		RefParent subParent = new RefParent(parent);
 		seen.put(name, subParent);
 		get(startPosition.grammar).context(
 			startPosition, 
-			startStore, 
 			subParent, 
 			seen);
 	}

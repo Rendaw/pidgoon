@@ -18,10 +18,17 @@ public class Not extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
 		// Order is significant - custom terminal context behavior based on comparison
 		Mutable<Boolean> mutable = new Mutable<>(null);
-		root.context(startPosition, store.split(), new Parent() {
+		class NotParent implements Parent {
+			Parent parent;
+			
+			public NotParent(Parent parent) {
+				super();
+				this.parent = parent;
+			}
+
 			public void error(Position position, String string) {
 				mutable.value = true;
 			}
@@ -31,13 +38,19 @@ public class Not extends Node {
 			}
 
 			public String buildPath(String subpath) {
-				return "\t next: not " + subpath;
+				return parent.buildPath("(ignore: not pattern)");
 			}
-		}, seen);
+
+			@Override
+			public Parent clone(Parent stopAt) {
+				return new NotParent(parent.clone(stopAt));
+			}
+		}
+		root.context(startPosition, new NotParent(parent), seen);
 		startPosition.leaves.add(new TerminalContext() {
 			@Override
 			public String toString() {
-				return parent.buildPath("not: see previous line");
+				return parent.buildPath(String.format("not: %s", root));
 			}
 			@Override
 			public void parse(Position position) {

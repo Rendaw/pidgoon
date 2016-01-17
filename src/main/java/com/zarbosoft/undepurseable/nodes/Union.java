@@ -23,14 +23,18 @@ public class Union extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store startStore, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
 		Pair.enumerate(children).forEach(p -> {
 			Map<String, RefParent> newSeen = new HashMap<>();
 			newSeen.putAll(seen);
-			p.second.context(startPosition, startStore.split(), new BaseParent(parent) {
+			class UnionParent extends BaseParent {
+				public UnionParent(Parent parent) {
+					super(parent);
+				}
+
 				@Override
 				public void advance(Position position, Store store) {
-					if (drop) store.dropData(startStore);
+					if (drop) store = store.drop();
 					parent.advance(position, store);
 				}
 
@@ -38,7 +42,13 @@ public class Union extends Node {
 				public String buildPath(String subpath) {
 					return parent.buildPath(String.format("union|%d.%s", p.first, subpath));
 				}
-			}, newSeen);
+
+				@Override
+				public Parent clone(Parent stopAt) {
+					return new UnionParent(parent.clone(stopAt));
+				}
+			};
+			p.second.context(startPosition, new UnionParent(parent), newSeen);
 		});
 	}
 	

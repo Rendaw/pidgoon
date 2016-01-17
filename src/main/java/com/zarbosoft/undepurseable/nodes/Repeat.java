@@ -30,25 +30,28 @@ public class Repeat extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store startStore, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
 		class RepParent extends BaseParent {
+			Store store;
 			long count;
-			
-			public RepParent(long count) {
+
+			public RepParent(Parent parent, Store store, long count) {
 				super(parent);
+				this.store = store;
 				this.count = count;
 			}
 
 			public void advance(Position position, Store store) {
-				if (drop) store.dropData(startStore);
+				if (drop) store = store.drop();
+				this.store.add(store);
 				long nextCount = count + 1;
 				if ((max != null) && (nextCount == max)) {
-					parent.advance(position, store);
+					parent.advance(position, this.store.split());
 					return;
 				} else {
-					root.context(position, store, new RepParent(nextCount));
+					root.context(position, new RepParent(parent, this.store, nextCount));
 					if ((min == null) || (nextCount >= min))
-						parent.advance(position, store.split());
+						parent.advance(position, this.store.split());
 				}
 			}
 			
@@ -61,10 +64,16 @@ public class Repeat extends Node {
 					max == null ? "*" : max.toString(), 
 					subpath));
 			}
+
+			@Override
+			public Parent clone(Parent stopAt) {
+				assert(count == 0);
+				return new RepParent(parent.clone(stopAt), store.split(), count);
+			}
 		}
-		root.context(startPosition, startStore, new RepParent(0), seen);
+		root.context(startPosition, new RepParent(parent, new Store(), 0), seen);
 		if ((min == null) || (min == 0))
-			parent.advance(startPosition, startStore.split());
+			parent.advance(startPosition, new Store());
 	}
 
 	public String toString() {

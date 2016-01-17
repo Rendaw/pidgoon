@@ -1,7 +1,8 @@
 package com.zarbosoft.undepurseable.internal;
 
-public interface TerminalContext {
+public abstract class TerminalContext {
+	protected Store store = new Store();
 
-	void parse(Position position);
+	public abstract void parse(Position position);
 
 }

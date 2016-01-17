@@ -13,7 +13,6 @@ import com.zarbosoft.undepurseable.internal.Aux;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.Position;
-import com.zarbosoft.undepurseable.internal.Store;
 import com.zarbosoft.undepurseable.internal.TerminalContext;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
 
@@ -78,7 +77,7 @@ public class Terminal extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
 		Node outer = this;
 		startPosition.leaves.add(new TerminalContext() {
 			@Override
