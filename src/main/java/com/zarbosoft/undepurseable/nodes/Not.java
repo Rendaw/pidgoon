@@ -18,35 +18,22 @@ public class Not extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
 		// Order is significant - custom terminal context behavior based on comparison
 		Mutable<Boolean> mutable = new Mutable<>(null);
-		class NotParent implements Parent {
-			Parent parent;
-			
-			public NotParent(Parent parent) {
-				super();
-				this.parent = parent;
-			}
+		root.context(startPosition, store, new Parent() {
+					public void error(Position position, String string) {
+						mutable.value = true;
+					}
 
-			public void error(Position position, String string) {
-				mutable.value = true;
-			}
+					public void advance(Position position, Store store) {
+						mutable.value = false;
+					}
 
-			public void advance(Position position, Store store) {
-				mutable.value = false;
-			}
-
-			public String buildPath(String subpath) {
-				return parent.buildPath("(ignore: not pattern)");
-			}
-
-			@Override
-			public Parent clone(Parent stopAt) {
-				return new NotParent(parent.clone(stopAt));
-			}
-		}
-		root.context(startPosition, new NotParent(parent), seen);
+					public String buildPath(String subpath) {
+						return parent.buildPath("(ignore: not pattern)");
+					}
+				}, seen);
 		startPosition.leaves.add(new TerminalContext() {
 			@Override
 			public String toString() {

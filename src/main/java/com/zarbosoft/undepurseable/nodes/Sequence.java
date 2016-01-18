@@ -35,36 +35,32 @@ public class Sequence extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
 		class SeqParent extends BaseParent {
-			Store store;
 			final int step;
 
-			public SeqParent(Parent parent, Store store, int step) {
+			public SeqParent(Parent parent, int step) {
 				super(parent);
-				this.store = store;
 				this.step = step;
 			}
 			
 			public void advance(Position position, Store store) {
 				if (drop) store = store.drop();
-				System.out.println(String.format("Adding %s", store.dataString()));
-				this.store.add(store);
 				System.out.println(String.format(
 					"Seq %d %d store %d : stack %s, data [%s]", 
 					step,
 					System.identityHashCode(this),
-					System.identityHashCode(this.store),
-					this.store.stack.stream()
+					System.identityHashCode(store),
+					store.stack.stream()
 						.map(o -> o.toString())
 						.collect(Collectors.joining(", ")),
-					this.store.dataString()
+					store.dataString()
 				));
 				int nextStep = step + 1;
 				if (nextStep >= children.size())
-					parent.advance(position, this.store);
+					parent.advance(position, store);
 				else {
-					children.get(nextStep).context(position, new SeqParent(parent, this.store, nextStep));
+					children.get(nextStep).context(position, store, new SeqParent(parent, nextStep));
 				}
 			}
 			
@@ -72,14 +68,8 @@ public class Sequence extends Node {
 			public String buildPath(String subpath) {
 				return parent.buildPath(String.format("seq[%d/%d].%s", step + 1, children.size(), subpath));
 			}
-
-			@Override
-			public Parent clone(Parent stopAt) {
-				assert(step == 0);
-				return new SeqParent(parent.clone(stopAt), store.split(), step);
-			}
 		}
-		children.get(0).context(startPosition, new SeqParent(parent, new Store(), 0), seen);
+		children.get(0).context(startPosition, store, new SeqParent(parent, 0), seen);
 	}
 	
 	public String toString() {

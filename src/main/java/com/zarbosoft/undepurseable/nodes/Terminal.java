@@ -13,6 +13,7 @@ import com.zarbosoft.undepurseable.internal.Aux;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.Position;
+import com.zarbosoft.undepurseable.internal.Store;
 import com.zarbosoft.undepurseable.internal.TerminalContext;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
 
@@ -77,7 +78,16 @@ public class Terminal extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
+		System.out.println(String.format(
+			"Term node %d store %d : stack %s, data [%s]", 
+			System.identityHashCode(this),
+			System.identityHashCode(store),
+			store.stack.stream()
+				.map(o -> o.toString())
+				.collect(Collectors.joining(", ")),
+			store.dataString()
+		));
 		Node outer = this;
 		startPosition.leaves.add(new TerminalContext() {
 			@Override
@@ -89,6 +99,15 @@ public class Terminal extends Node {
 			public void parse(Position position) {
 				if (value.contains(position.get())) {
 					if (!drop) store.add(position);
+					System.out.println(String.format(
+						"Term context %d store %d : stack %s, data [%s]", 
+						System.identityHashCode(outer),
+						System.identityHashCode(store),
+						store.stack.stream()
+							.map(o -> o.toString())
+							.collect(Collectors.joining(", ")),
+						store.dataString()
+					));
 					parent.advance(position, store);
 				} else {
 					parent.error(position, toString());

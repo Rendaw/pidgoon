@@ -23,32 +23,22 @@ public class Union extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
 		Pair.enumerate(children).forEach(p -> {
 			Map<String, RefParent> newSeen = new HashMap<>();
 			newSeen.putAll(seen);
-			class UnionParent extends BaseParent {
-				public UnionParent(Parent parent) {
-					super(parent);
-				}
+			p.second.context(startPosition, store.split(), new BaseParent(parent) {
+						@Override
+						public void advance(Position position, Store store) {
+							if (drop) store = store.drop();
+							parent.advance(position, store);
+						}
 
-				@Override
-				public void advance(Position position, Store store) {
-					if (drop) store = store.drop();
-					parent.advance(position, store);
-				}
-
-				@Override
-				public String buildPath(String subpath) {
-					return parent.buildPath(String.format("union|%d.%s", p.first, subpath));
-				}
-
-				@Override
-				public Parent clone(Parent stopAt) {
-					return new UnionParent(parent.clone(stopAt));
-				}
-			};
-			p.second.context(startPosition, new UnionParent(parent), newSeen);
+						@Override
+						public String buildPath(String subpath) {
+							return parent.buildPath(String.format("union|%d.%s", p.first, subpath));
+						}
+					}, newSeen);
 		});
 	}
 	

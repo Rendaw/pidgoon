@@ -24,7 +24,7 @@ public class Reference extends Node {
 			if (drop) store = store.drop();
 			originalParent.advance(position, store.split());
 			for (Parent p : parents)
-				p.clone(this).advance(position, store.split());
+				p.advance(position, store.split());
 		}
 
 		public String buildPath(String subpath) {
@@ -34,12 +34,6 @@ public class Reference extends Node {
 		@Override
 		public void error(Position position, String string) {
 			originalParent.error(position, string);
-		}
-
-		@Override
-		public Parent clone(Parent stopAt) {
-			if (stopAt == this) return this;
-			return new RefParent(originalParent.clone(stopAt));
 		}
 	}
 
@@ -60,7 +54,7 @@ public class Reference extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Parent parent, Map<String, RefParent> seen) {
+	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
 		if (seen.containsKey(name)) {
 			seen.get(name).parents.add(parent);
 			return;
@@ -69,8 +63,8 @@ public class Reference extends Node {
 		seen.put(name, subParent);
 		get(startPosition.grammar).context(
 			startPosition, 
-			subParent, 
-			seen);
+			store, 
+			subParent, seen);
 	}
 	
 	public String toString() {
