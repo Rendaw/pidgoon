@@ -14,9 +14,9 @@ import com.zarbosoft.undepurseable.internal.Aux;
 import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
-import com.zarbosoft.undepurseable.internal.Position;
+import com.zarbosoft.undepurseable.internal.ParseContext;
 import com.zarbosoft.undepurseable.internal.Store;
-import com.zarbosoft.undepurseable.internal.TerminalContext;
+import com.zarbosoft.undepurseable.internal.TerminalReader;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
 
 public class Terminal extends Node {
@@ -81,20 +81,20 @@ public class Terminal extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
+	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
 		Node outer = this;
-		startPosition.addLeaf(new TerminalContext() {
+		context.outLeaves.add(new TerminalReader() {
 			@Override
 			public String toString() {
 				return parent.buildPath(outer.toString());
 			}
 			
 			@Override
-			public void parse(Position position) {
-				if (value.contains(position.get())) {
-					if (cut) parent.cut(position);
-					if (!drop) store.addData(new Clip(position));
-					parent.advance(position, store);
+			public void parse() {
+				if (value.contains(context.position.get())) {
+					if (cut) parent.cut();
+					if (!drop) store.addData(new Clip(context.position));
+					parent.advance(store);
 				} else {
 					parent.error(this);
 				}

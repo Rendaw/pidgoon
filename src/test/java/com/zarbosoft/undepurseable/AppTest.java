@@ -7,11 +7,16 @@ import java.util.HashMap;
 
 import org.junit.Test;
 
+import com.zarbosoft.undepurseable.nodes.Capture;
+import com.zarbosoft.undepurseable.nodes.Reference;
+import com.zarbosoft.undepurseable.nodes.Sequence;
+import com.zarbosoft.undepurseable.nodes.Terminal;
+import com.zarbosoft.undepurseable.nodes.Union;
+
 import junit.framework.TestCase;
 
 public class AppTest extends TestCase
 {
-	/*
 	@Test
 	public void testUnion() throws IOException {
 		Grammar grammar = new Grammar();
@@ -42,11 +47,11 @@ public class AppTest extends TestCase
 			new Capture(
 				new Reference("one"),
 				s -> {
-					s.stack.push(s.topData().toString());
+					s.pushStack(s.topData().toString());
 				}
 			)
 		);
-		assertEquals("azz", grammar.parse("two", "azz").getLast());
+		assertEquals("azz", grammar.parse("two", "azz").top().toString());
 	}
 
 	@Test
@@ -62,11 +67,11 @@ public class AppTest extends TestCase
 					)
 					.add(Terminal.fromChar('a')),
 				s -> {
-					s.stack.push(s.topData().toString());
+					s.pushStack(s.topData().toString());
 				}
 			)
 		);
-		assertEquals("za", grammar.parse("one", "za").getLast());
+		assertEquals("za", grammar.parse("one", "za").top().toString());
 	}
 	
 	@Test
@@ -84,19 +89,16 @@ public class AppTest extends TestCase
 	public void testGrammarFile2() throws IOException {
 		GrammarParser
 			.parse(
-				//new ByteArrayInputStream("root : WS arrayBody EOF;".getBytes(StandardCharsets.UTF_8)),
 				new ByteArrayInputStream("root : WS arrayBody;".getBytes(StandardCharsets.UTF_8)),
 				new HashMap<String, Callback>()
 			);
 	}
-	*/
 	
 	@Test
 	public void testGrammarFile3() throws IOException {
 		GrammarParser
 			.parse(
 				new ByteArrayInputStream("WS : #([ \\t\\n] | '*' ( ~[*\\\\] | '\\\\' . )* '*')*;".getBytes(StandardCharsets.UTF_8)),
-				//new ByteArrayInputStream("WS : #(c | a b )*;".getBytes(StandardCharsets.UTF_8)),
 				new HashMap<String, Callback>()
 			);
 	}

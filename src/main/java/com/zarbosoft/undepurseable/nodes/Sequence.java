@@ -11,7 +11,7 @@ import com.zarbosoft.undepurseable.internal.BaseParent;
 import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
-import com.zarbosoft.undepurseable.internal.Position;
+import com.zarbosoft.undepurseable.internal.ParseContext;
 import com.zarbosoft.undepurseable.internal.Store;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
 
@@ -36,8 +36,7 @@ public class Sequence extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
-		long start = startPosition.getAbsolute();
+	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
 		class SeqParent extends BaseParent {
 			final int step;
 
@@ -46,24 +45,24 @@ public class Sequence extends Node {
 				this.step = step;
 			}
 			
-			public void advance(Position position, Store store) {
-				if (cut) parent.cut(position);
+			public void advance(Store store) {
+				if (cut) parent.cut();
 				Clip data = store.popData();
 				if (!drop) store.addData(data);
 				int nextStep = step + 1;
 				if (nextStep >= children.size())
-					parent.advance(position, store);
+					parent.advance(store);
 				else {
-					children.get(nextStep).context(position, store.pushData(), new SeqParent(parent, nextStep));
+					children.get(nextStep).context(context, store.pushData(), new SeqParent(parent, nextStep));
 				}
 			}
 			
 			@Override
 			public String buildPath(String subpath) {
-				return parent.buildPath(String.format("seq[%d/%d] (%d-) . %s", step + 1, children.size(), start, subpath));
+				return parent.buildPath(String.format("seq[%d/%d] . %s", step + 1, children.size(), subpath));
 			}
 		}
-		children.get(0).context(startPosition, store.pushData(), new SeqParent(parent, 0), seen);
+		children.get(0).context(context, store.pushData(), new SeqParent(parent, 0), seen);
 	}
 	
 	public String toString() {

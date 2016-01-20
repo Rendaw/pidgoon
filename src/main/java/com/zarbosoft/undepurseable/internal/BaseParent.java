@@ -9,7 +9,7 @@ public abstract class BaseParent implements Parent {
 		this.parent = parent;
 	}
 	
-	public void error(TerminalContext leaf) {
+	public void error(TerminalReader leaf) {
 		parent.error(leaf);
 	}
 	
@@ -17,7 +17,7 @@ public abstract class BaseParent implements Parent {
 		return parent.size(stopAt, start + 1);
 	}
 
-	public void cut(Position position) {
-		parent.cut(position);
+	public void cut() {
+		parent.cut();
 	}
 }

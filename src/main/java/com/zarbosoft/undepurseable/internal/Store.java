@@ -1,8 +1,8 @@
 package com.zarbosoft.undepurseable.internal;
 
 public class Store {
-	public BranchingStack<Object> stack;
-	public BranchingStack<Clip> data;
+	protected BranchingStack<Object> stack;
+	private BranchingStack<Clip> data;
 
 	public Store() { 
 		stack = null;

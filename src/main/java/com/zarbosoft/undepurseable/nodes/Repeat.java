@@ -6,7 +6,7 @@ import com.zarbosoft.undepurseable.internal.BaseParent;
 import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
-import com.zarbosoft.undepurseable.internal.Position;
+import com.zarbosoft.undepurseable.internal.ParseContext;
 import com.zarbosoft.undepurseable.internal.Store;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
 
@@ -31,8 +31,7 @@ public class Repeat extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
-		long start = startPosition.getAbsolute();
+	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
 		class RepParent extends BaseParent {
 			long count;
 
@@ -41,35 +40,34 @@ public class Repeat extends Node {
 				this.count = count;
 			}
 
-			public void advance(Position position, Store store) {
-				if (cut) parent.cut(position);
+			public void advance(Store store) {
+				if (cut) parent.cut();
 				Clip data = store.popData();
 				if (!drop) store.addData(data);
 				long nextCount = count + 1;
 				if ((max != null) && (nextCount == max)) {
-					parent.advance(position, store);
+					parent.advance(store);
 					return;
 				} else {
-					root.context(position, store.split().pushData(), new RepParent(nextCount));
+					root.context(context, store.split().pushData(), new RepParent(nextCount));
 					if ((min == null) || (nextCount >= min))
-						parent.advance(position, store.split());
+						parent.advance(store.split());
 				}
 			}
 			
 			@Override
 			public String buildPath(String subpath) {
 				return parent.buildPath(String.format(
-					"rep*%d/%s%s (%d-) . %s", 
+					"rep*%d/%s%s . %s", 
 					count + 1, 
 					min == 0 ? "" : String.format("%s-", min.toString()), 
 					max == null ? "*" : max.toString(), 
-					start,
 					subpath));
 			}
 		}
-		root.context(startPosition, store.split().pushData(), new RepParent(0), seen);
+		root.context(context, store.split().pushData(), new RepParent(0), seen);
 		if ((min == null) || (min == 0))
-			parent.advance(startPosition, store.split());
+			parent.advance(store.split());
 	}
 
 	public String toString() {

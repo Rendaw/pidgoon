@@ -5,12 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.zarbosoft.undepurseable.internal.Clip;
-import com.zarbosoft.undepurseable.internal.GrammarPrivate;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
-import com.zarbosoft.undepurseable.internal.Position;
+import com.zarbosoft.undepurseable.internal.ParseContext;
 import com.zarbosoft.undepurseable.internal.Store;
-import com.zarbosoft.undepurseable.internal.TerminalContext;
+import com.zarbosoft.undepurseable.internal.TerminalReader;
 
 public class Reference extends Node {
 
@@ -22,15 +21,15 @@ public class Reference extends Node {
 			originalParent = parent;
 		}
 
-		public void advance(Position position, Store store) {
-			if (cut) originalParent.cut(position);
+		public void advance(Store store) {
+			if (cut) originalParent.cut();
 			Clip data = store.popData();
 			if (!drop) store.addData(data);
-			originalParent.advance(position, store.split());
+			originalParent.advance(store.split());
 			for (Parent p : loopParents) {
 				Store splitStore = store.split();
 				splitStore.injectDataStack(p.size(this, 1));
-				p.advance(position, splitStore.split());
+				p.advance(splitStore.split());
 			}
 		}
 
@@ -39,7 +38,7 @@ public class Reference extends Node {
 		}
 
 		@Override
-		public void error(TerminalContext leaf) {
+		public void error(TerminalReader leaf) {
 			originalParent.error(leaf);
 		}
 
@@ -50,8 +49,8 @@ public class Reference extends Node {
 		}
 
 		@Override
-		public void cut(Position position) {
-			originalParent.cut(position);
+		public void cut() {
+			originalParent.cut();
 		}
 	}
 
@@ -63,24 +62,24 @@ public class Reference extends Node {
 		this.name = name;
 	}
 
-	private Node get(GrammarPrivate grammar) {
+	private Node get(ParseContext context) {
 		if (base == null) {
-			base = grammar.getNode(name);
+			base = context.grammar.getNode(name);
 			drop = drop || base.drop;
 		}
 		return base;
 	}
 
 	@Override
-	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
+	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
 		if (seen.containsKey(name)) {
 			seen.get(name).loopParents.add(parent);
 			return;
 		}
 		RefParent subParent = new RefParent(parent);
 		seen.put(name, subParent);
-		get(startPosition.grammar).context(
-			startPosition, 
+		get(context).context(
+			context,
 			store.pushData(), 
 			subParent, seen);
 	}

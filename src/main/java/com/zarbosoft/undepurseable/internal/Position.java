@@ -3,13 +3,10 @@ package com.zarbosoft.undepurseable.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.common.base.Strings;
 
 public class Position {
-	public GrammarPrivate grammar;
 	InputStream stream;
 	
 	private int bufUsed = 0;
@@ -20,19 +17,13 @@ public class Position {
 	private long line = 0;
 	private long column = 0;
 
-	public List<TerminalContext> errors = new ArrayList<>();
-	protected List<Store> results = new ArrayList<>();
-	private List<TerminalContext> leaves = new ArrayList<>();
-
-	public Position(GrammarPrivate grammar, InputStream stream) throws IOException {
-		this.grammar = grammar;
+	public Position(InputStream stream) throws IOException {
 		this.stream = stream;
 		buf = new byte[10 * 1024];
 		bufUsed = stream.read(buf, 0, buf.length);
 	}
 
 	private Position(Position last) throws IOException {
-		this.grammar = last.grammar;
 		stream = last.stream;
 		if (last.localOffset + 1 < last.bufUsed) {
 			bufUsed = last.bufUsed;
@@ -63,7 +54,7 @@ public class Position {
 	@Override
 	public String toString() {
 		int windowStart = Math.max(Math.min(localOffset - 30, bufUsed - 60), 0);
-		int windowStop = Math.min(bufUsed, windowStart + 60);
+		int windowStop = Math.max(Math.min(bufUsed, windowStart + 60), 0);
 		String prefix = String.format("line %d, col %d: [", line, column);
 		return String.format(
 			"%s%s]\n%s%s", 
@@ -85,22 +76,8 @@ public class Position {
 	public Byte get() {
 		return buf[localOffset];
 	}
-	
-	public void addLeaf(TerminalContext leaf) {
-		leaves.add(leaf);
-	}
 
 	public long getAbsolute() {
 		return absolute;
-	}
-
-	public List<TerminalContext> takeLeaves() {
-		List<TerminalContext> out = leaves;
-		leaves = new ArrayList<>();
-		return out;
-	}
-
-	public List<TerminalContext> getLeaves() {
-		return leaves;
 	}
 }

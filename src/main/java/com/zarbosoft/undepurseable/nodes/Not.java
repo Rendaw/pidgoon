@@ -6,9 +6,9 @@ import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Mutable;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
-import com.zarbosoft.undepurseable.internal.Position;
+import com.zarbosoft.undepurseable.internal.ParseContext;
 import com.zarbosoft.undepurseable.internal.Store;
-import com.zarbosoft.undepurseable.internal.TerminalContext;
+import com.zarbosoft.undepurseable.internal.TerminalReader;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
 
 public class Not extends Node {
@@ -19,15 +19,15 @@ public class Not extends Node {
 	}
 
 	@Override
-	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
+	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
 		// Order is significant - custom terminal context behavior based on comparison
 		Mutable<Boolean> mutable = new Mutable<>(null);
-		root.context(startPosition, store.split(), new Parent() {
-			public void error(TerminalContext leaf) {
+		root.context(context, store.split(), new Parent() {
+			public void error(TerminalReader leaf) {
 				mutable.value = true;
 			}
 
-			public void advance(Position position, Store store) {
+			public void advance(Store store) {
 				mutable.value = false;
 			}
 
@@ -41,27 +41,26 @@ public class Not extends Node {
 			}
 
 			@Override
-			public void cut(Position position) {
+			public void cut() {
 			}
 		}, seen);
-		startPosition.addLeaf(new TerminalContext() {
+		context.outLeaves.add(new TerminalReader() {
 			@Override
 			public String toString() {
 				return parent.buildPath(String.format("not: %s", root));
 			}
 			@Override
-			public void parse(Position position) {
+			public void parse() {
 				if (mutable.value == false) {
 					parent.error(this);
 					return;
 				}
-				if (!drop)
-					store.addData(new Clip(position));
+				if (!drop) store.addData(new Clip(context.position));
 				if (mutable.value == true) {
-					if (cut) parent.cut(position);
-					parent.advance(position, store);
+					if (cut) parent.cut();
+					parent.advance(store);
 				} else {
-					position.addLeaf(this);
+					context.outLeaves.add(this);
 				}
 			}
 		});
