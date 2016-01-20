@@ -96,7 +96,7 @@ public class Terminal extends Node {
 					if (!drop) store.addData(new Clip(position));
 					parent.advance(position, store);
 				} else {
-					parent.error(position, toString());
+					parent.error(this);
 				}
 			}
 		});

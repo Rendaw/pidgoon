@@ -20,7 +20,7 @@ public class Position {
 	private long line = 0;
 	private long column = 0;
 
-	public List<String> errors = new ArrayList<>();
+	public List<TerminalContext> errors = new ArrayList<>();
 	protected List<Store> results = new ArrayList<>();
 	private List<TerminalContext> leaves = new ArrayList<>();
 
@@ -87,17 +87,6 @@ public class Position {
 	}
 	
 	public void addLeaf(TerminalContext leaf) {
-		TerminalContext dupe = GrammarPrivate.dupes.get(leaf.toString());
-		if (dupe != null) {
-			System.out.println(String.format(
-					"Duplicate terminal at:\n%s\n%s\nBy: %s\nBy: %s", 
-					toString(), 
-					leaf.toString(), 
-					dupe.toString(), 
-					GrammarPrivate.dupeCurrent.toString()));
-			throw new RuntimeException("Bad");
-		}
-		GrammarPrivate.dupes.put(leaf.toString(), GrammarPrivate.dupeCurrent);
 		leaves.add(leaf);
 	}
 

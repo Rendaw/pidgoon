@@ -10,6 +10,7 @@ import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.Position;
 import com.zarbosoft.undepurseable.internal.Store;
+import com.zarbosoft.undepurseable.internal.TerminalContext;
 
 public class Reference extends Node {
 
@@ -38,8 +39,8 @@ public class Reference extends Node {
 		}
 
 		@Override
-		public void error(Position position, String string) {
-			originalParent.error(position, string);
+		public void error(TerminalContext leaf) {
+			originalParent.error(leaf);
 		}
 
 		@Override

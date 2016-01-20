@@ -23,7 +23,7 @@ public class Not extends Node {
 		// Order is significant - custom terminal context behavior based on comparison
 		Mutable<Boolean> mutable = new Mutable<>(null);
 		root.context(startPosition, store.split(), new Parent() {
-			public void error(Position position, String string) {
+			public void error(TerminalContext leaf) {
 				mutable.value = true;
 			}
 
@@ -52,7 +52,7 @@ public class Not extends Node {
 			@Override
 			public void parse(Position position) {
 				if (mutable.value == false) {
-					parent.error(position, toString());
+					parent.error(this);
 					return;
 				}
 				if (!drop)

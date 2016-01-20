@@ -9,8 +9,8 @@ public abstract class BaseParent implements Parent {
 		this.parent = parent;
 	}
 	
-	public void error(Position position, String string) {
-		parent.error(position, string);
+	public void error(TerminalContext leaf) {
+		parent.error(leaf);
 	}
 	
 	public long size(Parent stopAt, long start) {

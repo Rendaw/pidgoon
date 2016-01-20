@@ -13,9 +13,6 @@ import com.zarbosoft.undepurseable.InvalidGrammar;
 import com.zarbosoft.undepurseable.InvalidStream;
 
 public class GrammarPrivate {
-	static Map<String, TerminalContext> dupes;
-	static TerminalContext dupeCurrent;
-	
 	private Map<String, Node> nodes = new HashMap<>();
 	
 	public void add(String name, Node node) {
@@ -23,14 +20,12 @@ public class GrammarPrivate {
 	}
 	
 	public BranchingStack<Object> parse(String node, InputStream stream) throws IOException {
-		Position position = new Position(this, stream);
+		final Mutable<Position> position = new Mutable<>(new Position(this, stream));
 		final Mutable<Deque<TerminalContext>> leaves = new Mutable<>(new ArrayDeque<>());
-		dupes = new HashMap<>();
-		dupeCurrent = null;
-		getNode(node).context(position, new Store(), new Parent() {
+		getNode(node).context(position.value, new Store(), new Parent() {
 			@Override
-			public void error(Position position, String string) {
-				position.errors.add(string);
+			public void error(TerminalContext leaf) {
+				position.value.errors.add(leaf);
 			}
 
 			@Override
@@ -54,26 +49,24 @@ public class GrammarPrivate {
 				return start; // Should never be called
 			}
 		});
-		leaves.value.addAll(position.takeLeaves());
+		leaves.value.addAll(position.value.takeLeaves());
 		BranchingStack<Object> results = null;
-		while (!position.isEOF()) {
+		while (!position.value.isEOF()) {
 			//System.out.println(String.format("%s", position));
 			while (!leaves.value.isEmpty()) {
 				TerminalContext leaf = leaves.value.removeFirst();
-				dupes = new HashMap<>();
-				dupeCurrent = leaf;
 				//System.out.println(leaf);
-				leaf.parse(position);
+				leaf.parse(position.value);
 			}
 			//System.out.println("\n");
 			leaves.value = new ArrayDeque<>();
-			leaves.value.addAll(position.getLeaves());
-			if (leaves.value.size() >= 1000) throw new GrammarTooAmbiguous(position);
-			if (!position.results.isEmpty())
-				results = position.results.get(0).stack;
-			Position nextPosition = position.advance();
-			if (!nextPosition.isEOF() && leaves.value.isEmpty()) throw new InvalidStream(position);
-			position = nextPosition;
+			leaves.value.addAll(position.value.getLeaves());
+			if (leaves.value.size() >= 1000) throw new GrammarTooAmbiguous(position.value);
+			if (!position.value.results.isEmpty())
+				results = position.value.results.get(0).stack;
+			Position nextPosition = position.value.advance();
+			if (!nextPosition.isEOF() && leaves.value.isEmpty()) throw new InvalidStream(position.value);
+			position.value = nextPosition;
 		}
 		if (results == null) {
 			return null;

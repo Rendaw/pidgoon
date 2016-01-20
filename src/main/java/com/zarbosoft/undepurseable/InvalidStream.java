@@ -18,6 +18,7 @@ public class InvalidStream extends RuntimeException {
 			"Bad input at:\n%s\n%s", 
 			position, 
 			position.errors.stream()
+				.map(l -> l.toString())
 				.collect(Collectors.joining("\n")));
 	}
 }
