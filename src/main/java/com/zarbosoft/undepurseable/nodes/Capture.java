@@ -1,10 +1,10 @@
 package com.zarbosoft.undepurseable.nodes;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.zarbosoft.undepurseable.Callback;
 import com.zarbosoft.undepurseable.internal.BaseParent;
+import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.Position;
@@ -23,32 +23,20 @@ public class Capture extends Node {
 
 	@Override
 	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
-		root.context(startPosition, store, new BaseParent(parent) {
-					public void advance(Position position, Store store) {
-						System.out.println(String.format(
-							"Capture BEGIN: stack %s, data [%s]", 
-							store.stack.stream()
-								.map(o -> o.toString())
-								.collect(Collectors.joining(", ")),
-							store.dataString()
-						));
-						callback.accept(store);
-						System.out.println(String.format(
-							"Capture END: stack %s, data [%s]", 
-							store.stack.stream()
-								.map(o -> o.toString())
-								.collect(Collectors.joining(", ")),
-							store.dataString()
-						));
-						if (drop) store = store.drop();
-						parent.advance(position, store);
-					}
+		root.context(startPosition, store.pushData(), new BaseParent(parent) {
+			public void advance(Position position, Store store) {
+				if (cut) parent.cut(position);
+				callback.accept(store);
+				Clip data = store.popData();
+				if (!drop) store.addData(data);
+				parent.advance(position, store);
+			}
 
-					@Override
-					public String buildPath(String subpath) {
-						return parent.buildPath(String.format("capture.%s", subpath));
-					}
-				}, seen);
+			@Override
+			public String buildPath(String subpath) {
+				return parent.buildPath(String.format("capture . %s", subpath));
+			}
+		}, seen);
 	}
 
 	public String toString() {

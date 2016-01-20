@@ -2,6 +2,7 @@ package com.zarbosoft.undepurseable.nodes;
 
 import java.util.Map;
 
+import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Mutable;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
@@ -21,20 +22,29 @@ public class Not extends Node {
 	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
 		// Order is significant - custom terminal context behavior based on comparison
 		Mutable<Boolean> mutable = new Mutable<>(null);
-		root.context(startPosition, store, new Parent() {
-					public void error(Position position, String string) {
-						mutable.value = true;
-					}
+		root.context(startPosition, store.split(), new Parent() {
+			public void error(Position position, String string) {
+				mutable.value = true;
+			}
 
-					public void advance(Position position, Store store) {
-						mutable.value = false;
-					}
+			public void advance(Position position, Store store) {
+				mutable.value = false;
+			}
 
-					public String buildPath(String subpath) {
-						return parent.buildPath("(ignore: not pattern)");
-					}
-				}, seen);
-		startPosition.leaves.add(new TerminalContext() {
+			public String buildPath(String subpath) {
+				return parent.buildPath("(ignore: not pattern)");
+			}
+
+			@Override
+			public long size(Parent stopAt, long start) {
+				return parent.size(stopAt, start + 1);
+			}
+
+			@Override
+			public void cut(Position position) {
+			}
+		}, seen);
+		startPosition.addLeaf(new TerminalContext() {
 			@Override
 			public String toString() {
 				return parent.buildPath(String.format("not: %s", root));
@@ -46,11 +56,12 @@ public class Not extends Node {
 					return;
 				}
 				if (!drop)
-					store.add(position);
+					store.addData(new Clip(position));
 				if (mutable.value == true) {
+					if (cut) parent.cut(position);
 					parent.advance(position, store);
 				} else {
-					position.leaves.add(this);
+					position.addLeaf(this);
 				}
 			}
 		});

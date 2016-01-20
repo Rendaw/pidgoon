@@ -7,16 +7,11 @@ import java.util.HashMap;
 
 import org.junit.Test;
 
-import com.zarbosoft.undepurseable.nodes.Capture;
-import com.zarbosoft.undepurseable.nodes.Reference;
-import com.zarbosoft.undepurseable.nodes.Sequence;
-import com.zarbosoft.undepurseable.nodes.Terminal;
-import com.zarbosoft.undepurseable.nodes.Union;
-
 import junit.framework.TestCase;
 
 public class AppTest extends TestCase
 {
+	/*
 	@Test
 	public void testUnion() throws IOException {
 		Grammar grammar = new Grammar();
@@ -47,7 +42,7 @@ public class AppTest extends TestCase
 			new Capture(
 				new Reference("one"),
 				s -> {
-					s.stack.push(s.dataString());
+					s.stack.push(s.topData().toString());
 				}
 			)
 		);
@@ -59,12 +54,17 @@ public class AppTest extends TestCase
 		Grammar grammar = new Grammar();
 		grammar.add(
 			"one", 
-			new Sequence()
-				.add(new Union()
-					.add(Terminal.fromChar('z'))
-					.add(Terminal.fromChar('z'))
-				)
-				.add(Terminal.fromChar('a'))
+			new Capture(
+				new Sequence()
+					.add(new Union()
+						.add(Terminal.fromChar('z'))
+						.add(Terminal.fromChar('z'))
+					)
+					.add(Terminal.fromChar('a')),
+				s -> {
+					s.stack.push(s.topData().toString());
+				}
+			)
 		);
 		assertEquals("za", grammar.parse("one", "za").getLast());
 	}
@@ -74,8 +74,31 @@ public class AppTest extends TestCase
 		GrammarParser
 			.parse(
 				new ByteArrayInputStream("rule : 'h' 'i';\n\n".getBytes(StandardCharsets.UTF_8)),
-				new HashMap<String, Callback>())
+				new HashMap<String, Callback>()
+			)
 			.parse("rule", "hi"); 
 		
 	}
+
+	@Test
+	public void testGrammarFile2() throws IOException {
+		GrammarParser
+			.parse(
+				//new ByteArrayInputStream("root : WS arrayBody EOF;".getBytes(StandardCharsets.UTF_8)),
+				new ByteArrayInputStream("root : WS arrayBody;".getBytes(StandardCharsets.UTF_8)),
+				new HashMap<String, Callback>()
+			);
+	}
+	*/
+	
+	@Test
+	public void testGrammarFile3() throws IOException {
+		GrammarParser
+			.parse(
+				new ByteArrayInputStream("WS : #([ \\t\\n] | '*' ( ~[*\\\\] | '\\\\' . )* '*')*;".getBytes(StandardCharsets.UTF_8)),
+				//new ByteArrayInputStream("WS : #(c | a b )*;".getBytes(StandardCharsets.UTF_8)),
+				new HashMap<String, Callback>()
+			);
+	}
+
 }

@@ -4,8 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Deque;
 
+import com.zarbosoft.undepurseable.internal.BranchingStack;
 import com.zarbosoft.undepurseable.internal.GrammarPrivate;
 import com.zarbosoft.undepurseable.internal.Node;
 
@@ -16,11 +16,11 @@ public class Grammar {
 		p.add(name,  node);
 	}
 
-	public Deque<Object> parse(String node, InputStream stream) throws IOException {
+	public BranchingStack<Object> parse(String node, InputStream stream) throws IOException {
 		return p.parse(node, stream);
 	}
 
-	public Deque<Object> parse(String node, String string) throws IOException {
+	public BranchingStack<Object> parse(String node, String string) throws IOException {
 		return parse(node, new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8)));
 	}
 	

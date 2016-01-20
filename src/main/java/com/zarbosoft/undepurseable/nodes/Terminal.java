@@ -9,7 +9,9 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.ImmutableRangeSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
+import com.zarbosoft.undepurseable.InvalidGrammar;
 import com.zarbosoft.undepurseable.internal.Aux;
+import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.Position;
@@ -33,6 +35,7 @@ public class Terminal extends Node {
 	
 	@SafeVarargs
 	public Terminal(Byte... units) {
+		if (units.length == 0) throw new InvalidGrammar("Empty terminal specification!");
 		ImmutableRangeSet.Builder<Byte> builder = ImmutableRangeSet.builder();
 		for (Byte unit : units) {
 			builder.add(Range.closedOpen(unit, (byte)(unit + 1)));
@@ -79,17 +82,8 @@ public class Terminal extends Node {
 
 	@Override
 	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
-		System.out.println(String.format(
-			"Term node %d store %d : stack %s, data [%s]", 
-			System.identityHashCode(this),
-			System.identityHashCode(store),
-			store.stack.stream()
-				.map(o -> o.toString())
-				.collect(Collectors.joining(", ")),
-			store.dataString()
-		));
 		Node outer = this;
-		startPosition.leaves.add(new TerminalContext() {
+		startPosition.addLeaf(new TerminalContext() {
 			@Override
 			public String toString() {
 				return parent.buildPath(outer.toString());
@@ -98,16 +92,8 @@ public class Terminal extends Node {
 			@Override
 			public void parse(Position position) {
 				if (value.contains(position.get())) {
-					if (!drop) store.add(position);
-					System.out.println(String.format(
-						"Term context %d store %d : stack %s, data [%s]", 
-						System.identityHashCode(outer),
-						System.identityHashCode(store),
-						store.stack.stream()
-							.map(o -> o.toString())
-							.collect(Collectors.joining(", ")),
-						store.dataString()
-					));
+					if (cut) parent.cut(position);
+					if (!drop) store.addData(new Clip(position));
 					parent.advance(position, store);
 				} else {
 					parent.error(position, toString());

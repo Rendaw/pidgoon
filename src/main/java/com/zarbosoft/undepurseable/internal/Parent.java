@@ -4,4 +4,6 @@ public interface Parent {
 	void advance(Position position, Store store);
 	void error(Position position, String string);
 	String buildPath(String rep);
+	long size(Parent stopAt, long start);
+	void cut(Position position);
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.zarbosoft.undepurseable.internal.BaseParent;
+import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Pair;
 import com.zarbosoft.undepurseable.internal.Parent;
@@ -24,21 +25,24 @@ public class Union extends Node {
 
 	@Override
 	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
+		long start = startPosition.getAbsolute();
 		Pair.enumerate(children).forEach(p -> {
 			Map<String, RefParent> newSeen = new HashMap<>();
 			newSeen.putAll(seen);
-			p.second.context(startPosition, store.split(), new BaseParent(parent) {
-						@Override
-						public void advance(Position position, Store store) {
-							if (drop) store = store.drop();
-							parent.advance(position, store);
-						}
+			p.second.context(startPosition, store.split().pushData(), new BaseParent(parent) {
+				@Override
+				public void advance(Position position, Store store) {
+					if (cut) parent.cut(position);
+					Clip data = store.popData();
+					if (!drop) store.addData(data);
+					parent.advance(position, store);
+				}
 
-						@Override
-						public String buildPath(String subpath) {
-							return parent.buildPath(String.format("union|%d.%s", p.first, subpath));
-						}
-					}, newSeen);
+				@Override
+				public String buildPath(String subpath) {
+					return parent.buildPath(String.format("union|%d (%d-) . %s", p.first + 1, start, subpath));
+				}
+			}, newSeen);
 		});
 	}
 	

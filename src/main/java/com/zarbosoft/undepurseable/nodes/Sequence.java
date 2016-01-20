@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.primitives.Bytes;
 import com.zarbosoft.undepurseable.internal.BaseParent;
+import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.Position;
@@ -36,6 +37,7 @@ public class Sequence extends Node {
 
 	@Override
 	public void context(Position startPosition, Store store, Parent parent, Map<String, RefParent> seen) {
+		long start = startPosition.getAbsolute();
 		class SeqParent extends BaseParent {
 			final int step;
 
@@ -45,31 +47,23 @@ public class Sequence extends Node {
 			}
 			
 			public void advance(Position position, Store store) {
-				if (drop) store = store.drop();
-				System.out.println(String.format(
-					"Seq %d %d store %d : stack %s, data [%s]", 
-					step,
-					System.identityHashCode(this),
-					System.identityHashCode(store),
-					store.stack.stream()
-						.map(o -> o.toString())
-						.collect(Collectors.joining(", ")),
-					store.dataString()
-				));
+				if (cut) parent.cut(position);
+				Clip data = store.popData();
+				if (!drop) store.addData(data);
 				int nextStep = step + 1;
 				if (nextStep >= children.size())
 					parent.advance(position, store);
 				else {
-					children.get(nextStep).context(position, store, new SeqParent(parent, nextStep));
+					children.get(nextStep).context(position, store.pushData(), new SeqParent(parent, nextStep));
 				}
 			}
 			
 			@Override
 			public String buildPath(String subpath) {
-				return parent.buildPath(String.format("seq[%d/%d].%s", step + 1, children.size(), subpath));
+				return parent.buildPath(String.format("seq[%d/%d] (%d-) . %s", step + 1, children.size(), start, subpath));
 			}
 		}
-		children.get(0).context(startPosition, store, new SeqParent(parent, 0), seen);
+		children.get(0).context(startPosition, store.pushData(), new SeqParent(parent, 0), seen);
 	}
 	
 	public String toString() {

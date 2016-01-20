@@ -22,7 +22,7 @@ public class Position {
 
 	public List<String> errors = new ArrayList<>();
 	protected List<Store> results = new ArrayList<>();
-	public List<TerminalContext> leaves = new ArrayList<>();
+	private List<TerminalContext> leaves = new ArrayList<>();
 
 	public Position(GrammarPrivate grammar, InputStream stream) throws IOException {
 		this.grammar = grammar;
@@ -60,6 +60,17 @@ public class Position {
 		}
 	}
 
+	@Override
+	public String toString() {
+		int windowStart = Math.max(Math.min(localOffset - 30, bufUsed - 60), 0);
+		int windowStop = Math.min(bufUsed, windowStart + 60);
+		String prefix = String.format("line %d, col %d: [", line, column);
+		return String.format(
+			"%s%s]\n%s%s", 
+			prefix, new String(buf, StandardCharsets.US_ASCII).substring(windowStart, windowStop).replace("\n", "."),
+			Strings.repeat(" ", prefix.length() + localOffset - windowStart), "^");
+	}
+
 	public Position advance() throws IOException {
 		if (bufUsed == -1) {
 			return null;
@@ -74,15 +85,33 @@ public class Position {
 	public Byte get() {
 		return buf[localOffset];
 	}
+	
+	public void addLeaf(TerminalContext leaf) {
+		TerminalContext dupe = GrammarPrivate.dupes.get(leaf.toString());
+		if (dupe != null) {
+			System.out.println(String.format(
+					"Duplicate terminal at:\n%s\n%s\nBy: %s\nBy: %s", 
+					toString(), 
+					leaf.toString(), 
+					dupe.toString(), 
+					GrammarPrivate.dupeCurrent.toString()));
+			throw new RuntimeException("Bad");
+		}
+		GrammarPrivate.dupes.put(leaf.toString(), GrammarPrivate.dupeCurrent);
+		leaves.add(leaf);
+	}
 
-	@Override
-	public String toString() {
-		int windowStart = Math.max(Math.min(localOffset - 30, bufUsed - 60), 0);
-		int windowStop = Math.min(bufUsed, windowStart + 60);
-		String prefix = String.format("line %d, col %d: [", line, column);
-		return String.format(
-			"%s%s]\n%s%s", 
-			prefix, new String(buf, StandardCharsets.US_ASCII).substring(windowStart, windowStop).replace("\n", "."),
-			Strings.repeat(" ", prefix.length() + localOffset - windowStart), "^");
+	public long getAbsolute() {
+		return absolute;
+	}
+
+	public List<TerminalContext> takeLeaves() {
+		List<TerminalContext> out = leaves;
+		leaves = new ArrayList<>();
+		return out;
+	}
+
+	public List<TerminalContext> getLeaves() {
+		return leaves;
 	}
 }

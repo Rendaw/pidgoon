@@ -9,11 +9,15 @@ public abstract class BaseParent implements Parent {
 		this.parent = parent;
 	}
 	
-	public abstract void advance(Position position, Store store);
-
 	public void error(Position position, String string) {
 		parent.error(position, string);
 	}
+	
+	public long size(Parent stopAt, long start) {
+		return parent.size(stopAt, start + 1);
+	}
 
-	public abstract String buildPath(String rep);
+	public void cut(Position position) {
+		parent.cut(position);
+	}
 }

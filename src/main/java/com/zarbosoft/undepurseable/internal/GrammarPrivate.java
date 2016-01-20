@@ -2,25 +2,31 @@ package com.zarbosoft.undepurseable.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.zarbosoft.undepurseable.GrammarTooAmbiguous;
 import com.zarbosoft.undepurseable.InvalidGrammar;
 import com.zarbosoft.undepurseable.InvalidStream;
 
 public class GrammarPrivate {
+	static Map<String, TerminalContext> dupes;
+	static TerminalContext dupeCurrent;
+	
 	private Map<String, Node> nodes = new HashMap<>();
 	
 	public void add(String name, Node node) {
 		nodes.put(name, node);
 	}
 	
-	public Deque<Object> parse(String node, InputStream stream) throws IOException {
+	public BranchingStack<Object> parse(String node, InputStream stream) throws IOException {
 		Position position = new Position(this, stream);
+		final Mutable<Deque<TerminalContext>> leaves = new Mutable<>(new ArrayDeque<>());
+		dupes = new HashMap<>();
+		dupeCurrent = null;
 		getNode(node).context(position, new Store(), new Parent() {
 			@Override
 			public void error(Position position, String string) {
@@ -31,41 +37,45 @@ public class GrammarPrivate {
 			public void advance(Position position, Store store) {
 				position.results.add(store);
 			}
+			
+			@Override
+			public void cut(Position position) {
+				position.takeLeaves();
+				leaves.value.clear();
+			}
 
 			@Override
 			public String buildPath(String rep) {
 				return node + " " + rep;
 			}
-		});
-		List<TerminalContext> leaves = position.leaves;
-		position.leaves = new ArrayList<>();
-		Deque<Object> results = null;
-		while (!position.isEOF()) {
-			System.out.println(String.format("%s", position));
-			for (TerminalContext leaf : leaves) {
-				System.out.println(leaf);
-				/*
-				System.out.println("Before leaf");
-				for (TerminalContext subLeaf : position.leaves)
-					System.out.println("\t" + subLeaf);
-				*/
-				leaf.parse(position);
-				/*
-				System.out.println("After leaf");
-				for (TerminalContext subLeaf : position.leaves)
-					System.out.println("\t" + subLeaf);
-				System.out.println("");
-				*/
+
+			@Override
+			public long size(Parent stopAt, long start) {
+				return start; // Should never be called
 			}
-			System.out.println("");
-			System.out.println("");
-			leaves = position.leaves;
-			if (leaves.isEmpty()) throw new InvalidStream(position);
+		});
+		leaves.value.addAll(position.takeLeaves());
+		BranchingStack<Object> results = null;
+		while (!position.isEOF()) {
+			//System.out.println(String.format("%s", position));
+			while (!leaves.value.isEmpty()) {
+				TerminalContext leaf = leaves.value.removeFirst();
+				dupes = new HashMap<>();
+				dupeCurrent = leaf;
+				//System.out.println(leaf);
+				leaf.parse(position);
+			}
+			//System.out.println("\n");
+			leaves.value = new ArrayDeque<>();
+			leaves.value.addAll(position.getLeaves());
+			if (leaves.value.size() >= 1000) throw new GrammarTooAmbiguous(position);
 			if (!position.results.isEmpty())
 				results = position.results.get(0).stack;
-			position = position.advance();
+			Position nextPosition = position.advance();
+			if (!nextPosition.isEOF() && leaves.value.isEmpty()) throw new InvalidStream(position);
+			position = nextPosition;
 		}
-		if ((results == null) || results.isEmpty()) {
+		if (results == null) {
 			return null;
 		}
 		return results;

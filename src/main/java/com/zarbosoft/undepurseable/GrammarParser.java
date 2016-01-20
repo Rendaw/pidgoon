@@ -2,11 +2,13 @@ package com.zarbosoft.undepurseable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Deque;
 import java.util.Map;
 
 import com.google.common.collect.Range;
+import com.zarbosoft.undepurseable.internal.BranchingStack;
+import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
+import com.zarbosoft.undepurseable.internal.Store;
 import com.zarbosoft.undepurseable.nodes.Capture;
 import com.zarbosoft.undepurseable.nodes.Not;
 import com.zarbosoft.undepurseable.nodes.Reference;
@@ -14,6 +16,7 @@ import com.zarbosoft.undepurseable.nodes.Repeat;
 import com.zarbosoft.undepurseable.nodes.Sequence;
 import com.zarbosoft.undepurseable.nodes.Terminal;
 import com.zarbosoft.undepurseable.nodes.Union;
+import com.zarbosoft.undepurseable.nodes.Wildcard;
 
 public class GrammarParser {
 	public static Grammar parse(InputStream stream, Map<String, Callback> callbacks) throws IOException {
@@ -31,7 +34,7 @@ public class GrammarParser {
 				.add(Terminal.fromChar(':'))
 				.add(new Reference("interstitial"))
 				.add(new Reference("expression"))
-				.add(Terminal.fromChar(';')));
+				.add(Terminal.fromChar(';').cut()));
 		g.add(
 			"identifier", 
 			new Sequence()
@@ -48,12 +51,10 @@ public class GrammarParser {
 			new Capture(
 				new Reference("identifier"),
 				(store) -> {
-					System.out.println(String.format("hi %d", store.stack.size()));
-					store.stack.addLast(store.dataString());
-					System.out.println(String.format("hi %d", store.stack.size()));
+					store.pushStack(store.topData().toString());
 				}));
 		g.add(
-			"expression", 
+			"left_expression", 
 			new Union()
 				.add(new Sequence()
 					.add(Terminal.fromChar('('))
@@ -69,6 +70,11 @@ public class GrammarParser {
 				.add(new Reference("repone"))
 				.add(new Reference("repmin"))
 				.add(new Reference("rep"))
+		);
+		g.add(
+			"expression", 
+			new Union()
+				.add(new Reference("left_expression"))
 				.add(new Reference("sequence"))
 				.add(new Reference("union")));
 		g.add(
@@ -76,51 +82,53 @@ public class GrammarParser {
 			new Capture(
 				new Reference("identifier"),
 				(store) -> {
-					store.stack.addLast(((Node)store.stack.removeLast()).drop());
+					store.pushStack(new Reference(store.topData().toString()));
 				}));
 		g.add(
 			"union", 
 			new Capture(
 				new Sequence()
-					.add(new Reference("expression"))
+					.add(new Reference("left_expression"))
 					.add(Terminal.fromChar('|'))
 					.add(new Reference("interstitial"))
 					.add(new Reference("expression")),
 				(store) -> {
-					Node left = (Node) store.stack.removeLast();
-					Node right = (Node) store.stack.removeLast();
-					store.stack.addLast(new Union().add(left).add(right));
+					Node right = (Node) store.popStack();
+					Node left = (Node) store.popStack();
+					store.pushStack(new Union().add(left).add(right));
 				}));
 		g.add(
 			"sequence", 
 			new Capture(
 				new Sequence()
-					.add(new Reference("expression"))
+					.add(new Reference("left_expression"))
+					.add(new Reference("interstitial1"))
 					.add(new Reference("expression")),
 				(store) -> {
-					Node left = (Node) store.stack.removeLast();
-					Node right = (Node) store.stack.removeLast();
-					store.stack.addLast(new Sequence().add(left).add(right));
+					Node right = (Node) store.popStack();
+					Node left = (Node) store.popStack();
+					store.pushStack(new Sequence().add(left).add(right));
 				}));
 		g.add(
 			"terminal_escape", 
 			new Capture(
 				new Sequence()
 					.add(Terminal.fromChar('\\').drop())
-					.add(new Terminal()),
+					.add(new Wildcard()),
 				(store) -> {
 					// TODO \xNN escapes
-					byte top = store.dataFirst();
-					if (top == (byte)'r') top = '\r';
-					if (top == (byte)'n') top = '\n';
-					if (top == (byte)'t') top = '\t';
-					store.stack.addLast(new Terminal(Range.closedOpen(top, (byte)(top + 1))));
+					byte top = store.topData().dataFirst();
+					if (top == (byte)'r') store.setData(new Clip((byte) '\r'));
+					if (top == (byte)'n') store.setData(new Clip((byte) '\n'));
+					if (top == (byte)'t') store.setData(new Clip((byte) '\t'));
 				}));
 		g.add(
 			"wildcard", 
 			new Capture(
-				Terminal.fromChar('.'),
-				(store) -> { store.stack.addLast(new Terminal()); }));
+				new Sequence()
+					.add(Terminal.fromChar('.'))
+					.add(new Reference("interstitial")),
+				(store) -> { store.pushStack(new Wildcard()); }));
 		g.add(
 			"terminal", 
 			new Capture(
@@ -139,17 +147,13 @@ public class GrammarParser {
 						.add(Terminal.fromChar('\'').drop())
 						.add(new Union()
 							.add(new Not(Terminal.fromChar('\\', '\'')))
-							.add(new Sequence()
-								.add(Terminal.fromChar('\\').drop())
-								.add(new Reference("terminal_escape"))
-							)
+							.add(new Reference("terminal_escape"))
 						)
 						.add(Terminal.fromChar('\'').drop())
 						.add(new Reference("interstitial"))
 					),
 				(store) -> {
-					System.out.println(String.format("Got terminal [%s]", store.dataString()));
-					store.stack.addLast(new Terminal(store.dataRender()));
+					store.pushStack(new Terminal(store.topData().dataRender()));
 				}));
 		g.add(
 			"string", 
@@ -161,12 +165,12 @@ public class GrammarParser {
 							.add(new Not(Terminal.fromChar('\\', '"')))
 							.add(new Sequence()
 								.add(Terminal.fromChar('\\').drop())
-								.add(new Terminal()))
+								.add(new Wildcard()))
 					).min(1))
 					.add(Terminal.fromChar('"').drop())
 					.add(new Reference("interstitial")),
 				(store) -> {
-					store.stack.addLast(Sequence.bytes(store.dataRender()));
+					store.pushStack(Sequence.bytes(store.topData().dataRender()));
 				}));
 		g.add(
 			"drop", 
@@ -174,9 +178,9 @@ public class GrammarParser {
 				new Sequence()
 					.add(Terminal.fromChar('#'))
 					.add(new Reference("interstitial"))
-					.add(new Reference("expression")),
+					.add(new Reference("left_expression")),
 				(store) -> {
-					store.stack.addLast(((Node)store.stack.removeLast()).drop());
+					store.pushStack(((Node)store.popStack()).drop());
 				}));
 		g.add(
 			"not", 
@@ -184,39 +188,39 @@ public class GrammarParser {
 				new Sequence()
 					.add(Terminal.fromChar('~'))
 					.add(new Reference("interstitial"))
-					.add(new Reference("expression")),
+					.add(new Reference("left_expression")),
 				(store) -> {
-					store.stack.addLast(new Not((Node)store.stack.removeLast()));
+					store.pushStack(new Not((Node)store.popStack()));
 				}));
 		g.add(
 			"repone", 
 			new Capture(
 				new Sequence()
-					.add(new Reference("expression"))
+					.add(new Reference("left_expression"))
 					.add(Terminal.fromChar('?'))
 					.add(new Reference("interstitial")),
 				(store) -> {
-					store.stack.addLast(new Repeat((Node)store.stack.removeLast()).max(1));
+					store.pushStack(new Repeat((Node)store.popStack()).max(1));
 				}));
 		g.add(
 			"repmin", 
 			new Capture(
 				new Sequence()
-					.add(new Reference("expression"))
+					.add(new Reference("left_expression"))
 					.add(Terminal.fromChar('+'))
 					.add(new Reference("interstitial")),
 				(store) -> {
-					store.stack.addLast(new Repeat((Node)store.stack.removeLast()).min(1));
+					store.pushStack(new Repeat((Node)store.popStack()).min(1));
 				}));
 		g.add(
 			"rep", 
 			new Capture(
 				new Sequence()
-					.add(new Reference("expression"))
+					.add(new Reference("left_expression"))
 					.add(Terminal.fromChar('*'))
 					.add(new Reference("interstitial")),
 				(store) -> {
-					store.stack.addLast(new Repeat((Node)store.stack.removeLast()));
+					store.pushStack(new Repeat((Node)store.popStack()));
 				}));
 		g.add(
 			"comment", 
@@ -225,25 +229,46 @@ public class GrammarParser {
 				.add(new Not(new Reference("eol")))
 				.add(new Reference("eol")));
 		g.add(
-			"interstitial", 
+			"interstitial1", 
 			new Repeat(
 				new Union()
 					.add(Terminal.fromChar(' ', '\t'))
 					.add(new Reference("eol"))
-					.add(new Reference("comment")))
-				.drop());
+					.add(new Reference("comment"))
+				)
+				.min(1)
+				.drop()
+		);
+		g.add(
+			"interstitial", 
+			new Repeat(new Reference("interstitial1")).max(1)
+		);
 		g.add(
 			"eol", 
 			new Union()
 				.add(new Sequence().add(new Terminal((byte)0x0D)).add(new Terminal((byte)0x0A)))
 				.add(new Terminal((byte)0x0A))
 				.drop());
-		Deque<Object> rules = g.parse("root", stream);
+		BranchingStack<Object> rules = g.parse("root", stream);
 		Grammar after = new Grammar();
-		while (!rules.isEmpty()) {
-			Node base = (Node) rules.removeLast();
-			String name = (String) rules.removeLast();
-			after.add(name, new Capture(base, callbacks.get(name)));
+		while (rules != null) {
+			Node base = (Node) rules.top();
+			rules = rules.pop();
+			String name = (String) rules.top();
+			rules = rules.pop();
+			after.add(
+				name, 
+				new Capture(
+					base, 
+					callbacks.getOrDefault(
+						name, 
+						new Callback() {
+							@Override
+							public void accept(Store store) {}
+						}
+					)
+				)
+			);
 		}
 		System.out.println(String.format("Final grammar:\n%s\n", after));
 		return after;
