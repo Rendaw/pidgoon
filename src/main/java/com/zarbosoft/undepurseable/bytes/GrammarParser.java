@@ -8,7 +8,6 @@ import com.google.common.collect.Range;
 import com.zarbosoft.undepurseable.bytes.internal.Callback;
 import com.zarbosoft.undepurseable.bytes.internal.Clip;
 import com.zarbosoft.undepurseable.bytes.internal.ClipStore;
-import com.zarbosoft.undepurseable.bytes.internal.Stream;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.nodes.Not;
 import com.zarbosoft.undepurseable.nodes.Reference;
@@ -270,7 +269,7 @@ public class GrammarParser {
 				.add(new Sequence().add(new Terminal((byte)0x0D)).add(new Terminal((byte)0x0A)))
 				.add(new Terminal((byte)0x0A))
 				.drop());
-		Grammar after = (Grammar) g.parse("root", new Stream(stream), new Grammar());
+		Grammar after = (Grammar) g.parse("root", stream, new Grammar());
 		System.out.println(String.format("Final grammar:\n%s\n", after));
 		return after;
 	}

@@ -2,15 +2,15 @@ package com.zarbosoft.undepurseable.bytes;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.google.common.primitives.Bytes;
 import com.zarbosoft.undepurseable.bytes.internal.ClipStore;
-import com.zarbosoft.undepurseable.bytes.internal.Stream;
+import com.zarbosoft.undepurseable.bytes.internal.Position;
 import com.zarbosoft.undepurseable.internal.GrammarPrivate;
 import com.zarbosoft.undepurseable.internal.Node;
-import com.zarbosoft.undepurseable.internal.SourceStream;
 import com.zarbosoft.undepurseable.nodes.Sequence;
 
 public class Grammar {
@@ -22,15 +22,15 @@ public class Grammar {
 		p.add(name,  node);
 	}
 
-	public Object parse(String node, SourceStream stream, Object initialStack) throws IOException {
+	public Object parse(String node, InputStream stream, Object initialStack) throws IOException {
 		ClipStore store = new ClipStore();
 		if (initialStack != null)
 			store.pushStack(initialStack);
-		return p.parse(node, stream, store);
+		return p.parse(node, new Position(stream), store);
 	}
 
 	public Object parse(String node, String string, Object initialStack) throws IOException {
-		return parse(node, new Stream(new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8))), initialStack);
+		return parse(node, new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8)), initialStack);
 	}
 
 	public Object parse(String node, String string) throws IOException {

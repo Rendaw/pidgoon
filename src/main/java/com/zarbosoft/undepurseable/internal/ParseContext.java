@@ -7,9 +7,9 @@ import java.util.Deque;
 import java.util.List;
 
 public class ParseContext {
-	public ParseContext(GrammarPrivate grammar, SourceStream stream) throws IOException {
+	public ParseContext(GrammarPrivate grammar, Position initialPosition) throws IOException {
 		this.grammar = grammar;
-		position = stream.position();
+		position = initialPosition;
 	}
 	public GrammarPrivate grammar;
 	public Position position;

@@ -28,8 +28,8 @@ public class GrammarPrivate {
 			.collect(Collectors.joining("\n"));
 	}
 	
-	public ParseContext prepare(String node, SourceStream stream, Store initialStore) throws IOException {
-		final ParseContext context = new ParseContext(this, stream);
+	public ParseContext prepare(String node, Position initialPosition, Store initialStore) throws IOException {
+		final ParseContext context = new ParseContext(this, initialPosition);
 		getNode(node).context(context, initialStore, new Parent() {
 			@Override
 			public void error(TerminalReader leaf) {
@@ -91,12 +91,12 @@ public class GrammarPrivate {
 		return context.preferredResult;
 	}
 
-	public Object parse(String node, SourceStream stream, Store initialStore) throws IOException {
-		return parse(node, stream, initialStore, null);
+	public Object parse(String node, Position initialPosition, Store initialStore) throws IOException {
+		return parse(node, initialPosition, initialStore, null);
 	}
 	
-	public Object parse(String node, SourceStream stream, Store initialStore, Stats stats) throws IOException {
-		ParseContext context = prepare(node, stream, initialStore);
+	public Object parse(String node, Position initialPosition, Store initialStore, Stats stats) throws IOException {
+		ParseContext context = prepare(node, initialPosition, initialStore);
 		if (context.position.isEOF()) return null;
 		while (!context.position.isEOF()) {
 			/*
