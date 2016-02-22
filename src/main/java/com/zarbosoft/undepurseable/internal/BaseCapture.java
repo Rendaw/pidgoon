@@ -7,6 +7,7 @@ import com.zarbosoft.undepurseable.nodes.Repeat;
 import com.zarbosoft.undepurseable.nodes.Sequence;
 import com.zarbosoft.undepurseable.nodes.Union;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
+import com.zarbosoft.undepurseable.source.Store;
 
 public abstract class BaseCapture extends Node {
 	private Node root;

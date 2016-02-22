@@ -1,7 +1,7 @@
 package com.zarbosoft.undepurseable.bytes.internal;
 
 import com.zarbosoft.undepurseable.internal.BaseStore;
-import com.zarbosoft.undepurseable.internal.Store;
+import com.zarbosoft.undepurseable.source.Store;
 
 public class ClipStore extends BaseStore {
 

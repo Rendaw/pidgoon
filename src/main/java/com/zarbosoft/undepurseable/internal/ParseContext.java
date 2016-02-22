@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import com.zarbosoft.undepurseable.source.Position;
+
 public class ParseContext {
 	public ParseContext(GrammarPrivate grammar, Position initialPosition) throws IOException {
 		this.grammar = grammar;

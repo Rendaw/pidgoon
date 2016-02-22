@@ -1,5 +1,7 @@
 package com.zarbosoft.undepurseable.internal;
 
+import com.zarbosoft.undepurseable.source.Store;
+
 public interface Parent {
 	void advance(Store storeI);
 	void error(TerminalReader leaf);

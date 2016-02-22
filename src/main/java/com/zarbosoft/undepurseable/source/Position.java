@@ -1,4 +1,4 @@
-package com.zarbosoft.undepurseable.internal;
+package com.zarbosoft.undepurseable.source;
 
 import java.io.IOException;
 

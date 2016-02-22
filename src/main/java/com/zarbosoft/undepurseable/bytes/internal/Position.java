@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.google.common.base.Strings;
 
-public class Position implements com.zarbosoft.undepurseable.internal.Position {
+public class Position implements com.zarbosoft.undepurseable.source.Position {
 	InputStream stream;
 	
 	private int bufUsed = 0;

@@ -1,4 +1,4 @@
-package com.zarbosoft.undepurseable.internal;
+package com.zarbosoft.undepurseable.source;
 
 
 public interface Store {

@@ -11,8 +11,8 @@ import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Pair;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.ParseContext;
-import com.zarbosoft.undepurseable.internal.Store;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
+import com.zarbosoft.undepurseable.source.Store;
 
 public class Union extends Node {
 	List<Node> children = new ArrayList<>();

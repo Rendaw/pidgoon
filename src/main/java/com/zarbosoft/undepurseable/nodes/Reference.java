@@ -7,8 +7,8 @@ import java.util.Map;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.ParseContext;
-import com.zarbosoft.undepurseable.internal.Store;
 import com.zarbosoft.undepurseable.internal.TerminalReader;
+import com.zarbosoft.undepurseable.source.Store;
 
 public class Reference extends Node {
 

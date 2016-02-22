@@ -1,5 +1,7 @@
 package com.zarbosoft.undepurseable.internal;
 
+import com.zarbosoft.undepurseable.source.Store;
+
 public abstract class BaseStore implements Store {
 	protected BranchingStack<Object> stack;
 	protected BranchingStack<Object> data;
