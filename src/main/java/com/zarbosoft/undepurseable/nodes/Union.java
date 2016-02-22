@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.zarbosoft.undepurseable.internal.BaseParent;
-import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Pair;
 import com.zarbosoft.undepurseable.internal.Parent;
@@ -32,8 +31,7 @@ public class Union extends Node {
 				@Override
 				public void advance(Store store) {
 					if (cut) parent.cut();
-					Clip data = store.popData();
-					if (!drop) store.addData(data);
+					store.popData(!drop);
 					parent.advance(store);
 				}
 

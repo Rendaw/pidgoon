@@ -2,7 +2,6 @@ package com.zarbosoft.undepurseable.nodes;
 
 import java.util.Map;
 
-import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Mutable;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
@@ -27,10 +26,12 @@ public class Not extends Node {
 				mutable.value = true;
 			}
 
+			@Override
 			public void advance(Store store) {
 				mutable.value = false;
 			}
 
+			@Override
 			public String buildPath(String subpath) {
 				return parent.buildPath("(ignore: not pattern)");
 			}
@@ -55,7 +56,7 @@ public class Not extends Node {
 					parent.error(this);
 					return;
 				}
-				if (!drop) store.addData(new Clip(context.position));
+				if (!drop) store.addData(context.position.getStoreData());
 				if (mutable.value == true) {
 					if (cut) parent.cut();
 					parent.advance(store);

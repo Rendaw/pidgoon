@@ -1,22 +1,23 @@
 package com.zarbosoft.undepurseable.internal;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import com.zarbosoft.undepurseable.source.SourceStream;
+
 public class ParseContext {
-	public ParseContext(GrammarPrivate grammar, InputStream stream) throws IOException {
+	public ParseContext(GrammarPrivate grammar, SourceStream stream) throws IOException {
 		this.grammar = grammar;
-		position = new Position(stream);
+		position = stream.position();
 	}
 	public GrammarPrivate grammar;
 	public Position position;
 	public Deque<TerminalReader> leaves = new ArrayDeque<>();
 	public List<TerminalReader> errors = new ArrayList<>();
 	public List<TerminalReader> outLeaves = new ArrayList<>();
-	public List<BranchingStack<Object>> results = new ArrayList<>();
-	public BranchingStack<Object> preferredResult = null;
+	public List<Object> results = new ArrayList<>();
+	public Object preferredResult = null;
 }

@@ -1,4 +1,4 @@
-package com.zarbosoft.undepurseable.internal;
+package com.zarbosoft.undepurseable.bytes.internal;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

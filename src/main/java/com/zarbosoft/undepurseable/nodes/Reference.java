@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.ParseContext;
@@ -23,8 +22,7 @@ public class Reference extends Node {
 
 		public void advance(Store store) {
 			if (cut) originalParent.cut();
-			Clip data = store.popData();
-			if (!drop) store.addData(data);
+			store.popData(!drop);
 			originalParent.advance(store.split());
 			for (Parent p : loopParents) {
 				Store splitStore = store.split();

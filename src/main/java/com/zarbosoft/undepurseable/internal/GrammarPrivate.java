@@ -1,7 +1,6 @@
 package com.zarbosoft.undepurseable.internal;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,6 +9,7 @@ import com.zarbosoft.undepurseable.GrammarTooAmbiguous;
 import com.zarbosoft.undepurseable.InvalidGrammar;
 import com.zarbosoft.undepurseable.InvalidStream;
 import com.zarbosoft.undepurseable.Stats;
+import com.zarbosoft.undepurseable.source.SourceStream;
 
 public class GrammarPrivate {
 	private Map<String, Node> nodes = new HashMap<>();
@@ -29,9 +29,9 @@ public class GrammarPrivate {
 			.collect(Collectors.joining("\n"));
 	}
 	
-	public ParseContext prepare(String node, InputStream stream) throws IOException {
+	public ParseContext prepare(String node, SourceStream stream, Store initialStore) throws IOException {
 		final ParseContext context = new ParseContext(this, stream);
-		getNode(node).context(context, new Store(), new Parent() {
+		getNode(node).context(context, initialStore, new Parent() {
 			@Override
 			public void error(TerminalReader leaf) {
 				context.errors.add(leaf);
@@ -39,7 +39,8 @@ public class GrammarPrivate {
 
 			@Override
 			public void advance(Store store) {
-				context.results.add(store.stack);
+				if (store.hasOneResult())
+					context.results.add(store.takeResult());
 			}
 			
 			@Override
@@ -55,7 +56,7 @@ public class GrammarPrivate {
 
 			@Override
 			public long size(Parent stopAt, long start) {
-				return start; // Should never be called
+				throw new UnsupportedOperationException();
 			}
 		});
 		return context;
@@ -87,16 +88,16 @@ public class GrammarPrivate {
 		if (!context.results.isEmpty()) context.preferredResult = context.results.get(0);
 	}
 	
-	public BranchingStack<Object> finish(ParseContext context) {
+	public Object finish(ParseContext context) {
 		return context.preferredResult;
 	}
 
-	public BranchingStack<Object> parse(String node, InputStream stream) throws IOException {
-		return parse(node, stream, null);
+	public Object parse(String node, SourceStream stream, Store initialStore) throws IOException {
+		return parse(node, stream, initialStore, null);
 	}
 	
-	public BranchingStack<Object> parse(String node, InputStream stream, Stats stats) throws IOException {
-		ParseContext context = prepare(node, stream);
+	public Object parse(String node, SourceStream stream, Store initialStore, Stats stats) throws IOException {
+		ParseContext context = prepare(node, stream, initialStore);
 		if (context.position.isEOF()) return null;
 		while (!context.position.isEOF()) {
 			/*

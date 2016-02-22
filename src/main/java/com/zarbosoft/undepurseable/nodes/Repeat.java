@@ -3,7 +3,6 @@ package com.zarbosoft.undepurseable.nodes;
 import java.util.Map;
 
 import com.zarbosoft.undepurseable.internal.BaseParent;
-import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.ParseContext;
@@ -42,8 +41,7 @@ public class Repeat extends Node {
 
 			public void advance(Store store) {
 				if (cut) parent.cut();
-				Clip data = store.popData();
-				if (!drop) store.addData(data);
+				store.popData(!drop);
 				long nextCount = count + 1;
 				if ((max != null) && (nextCount == max)) {
 					parent.advance(store);

@@ -1,4 +1,4 @@
-package com.zarbosoft.undepurseable.nodes;
+package com.zarbosoft.undepurseable.bytes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,9 @@ import com.google.common.collect.ImmutableRangeSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.zarbosoft.undepurseable.InvalidGrammar;
+import com.zarbosoft.undepurseable.bytes.internal.ClipStore;
+import com.zarbosoft.undepurseable.bytes.internal.Position;
 import com.zarbosoft.undepurseable.internal.Aux;
-import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.ParseContext;
@@ -81,7 +82,9 @@ public class Terminal extends Node {
 	}
 
 	@Override
-	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
+	public void context(ParseContext context, Store prestore, Parent parent, Map<String, RefParent> seen) {
+		ClipStore store = (ClipStore)prestore;
+		Position position = (Position) context.position;
 		Node outer = this;
 		context.outLeaves.add(new TerminalReader() {
 			@Override
@@ -91,9 +94,9 @@ public class Terminal extends Node {
 			
 			@Override
 			public void parse() {
-				if (value.contains(context.position.get())) {
+				if (value.contains(position.get())) {
 					if (cut) parent.cut();
-					if (!drop) store.addData(new Clip(context.position));
+					if (!drop) store.addData(position.getStoreData());
 					parent.advance(store);
 				} else {
 					parent.error(this);

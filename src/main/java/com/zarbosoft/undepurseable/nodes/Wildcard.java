@@ -2,7 +2,6 @@ package com.zarbosoft.undepurseable.nodes;
 
 import java.util.Map;
 
-import com.zarbosoft.undepurseable.internal.Clip;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Parent;
 import com.zarbosoft.undepurseable.internal.ParseContext;
@@ -26,7 +25,7 @@ public class Wildcard extends Node {
 			@Override
 			public void parse() {
 				if (cut) parent.cut();
-				if (!drop) store.addData(new Clip(context.position));
+				if (!drop) store.addData(context.position.getStoreData());
 				parent.advance(store);
 			}
 		});

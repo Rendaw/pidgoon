@@ -1,20 +1,19 @@
-package com.zarbosoft.undepurseable;
+package com.zarbosoft.undepurseable.bytes;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
 import com.google.common.collect.Range;
-import com.zarbosoft.undepurseable.internal.BranchingStack;
-import com.zarbosoft.undepurseable.internal.Clip;
+import com.zarbosoft.undepurseable.bytes.internal.Callback;
+import com.zarbosoft.undepurseable.bytes.internal.Clip;
+import com.zarbosoft.undepurseable.bytes.internal.ClipStore;
+import com.zarbosoft.undepurseable.bytes.internal.Stream;
 import com.zarbosoft.undepurseable.internal.Node;
-import com.zarbosoft.undepurseable.internal.Store;
-import com.zarbosoft.undepurseable.nodes.Capture;
 import com.zarbosoft.undepurseable.nodes.Not;
 import com.zarbosoft.undepurseable.nodes.Reference;
 import com.zarbosoft.undepurseable.nodes.Repeat;
 import com.zarbosoft.undepurseable.nodes.Sequence;
-import com.zarbosoft.undepurseable.nodes.Terminal;
 import com.zarbosoft.undepurseable.nodes.Union;
 import com.zarbosoft.undepurseable.nodes.Wildcard;
 
@@ -29,12 +28,34 @@ public class GrammarParser {
 					.add(new Reference("rule"))));
 		g.add(
 			"rule", 
-			new Sequence()
-				.add(new Reference("name"))
-				.add(Terminal.fromChar(':'))
-				.add(new Reference("interstitial"))
-				.add(new Reference("expression"))
-				.add(Terminal.fromChar(';').cut()));
+			new Capture(
+				new Sequence()
+					.add(new Reference("name"))
+					.add(Terminal.fromChar(':'))
+					.add(new Reference("interstitial"))
+					.add(new Reference("expression"))
+					.add(Terminal.fromChar(';').cut()),
+				(store) -> {
+					Node base = (Node) store.popStack();
+					String name = (String) store.popStack();
+					Grammar grammar = (Grammar) store.popStack();
+					grammar.add(
+						name, 
+						new Capture(
+							base, 
+							callbacks.getOrDefault(
+								name, 
+								new Callback() {
+									@Override
+									public void accept(ClipStore store) {}
+								}
+							)
+						)
+					);
+					store.pushStack(grammar);
+				}
+			)
+		);
 		g.add(
 			"identifier", 
 			new Sequence()
@@ -170,7 +191,7 @@ public class GrammarParser {
 					.add(Terminal.fromChar('"').drop())
 					.add(new Reference("interstitial")),
 				(store) -> {
-					store.pushStack(Sequence.bytes(store.topData().dataRender()));
+					store.pushStack(Grammar.byteSeq(store.topData().dataRender()));
 				}));
 		g.add(
 			"drop", 
@@ -225,7 +246,7 @@ public class GrammarParser {
 		g.add(
 			"comment", 
 			new Sequence()
-				.add(Sequence.string("//"))
+				.add(Grammar.stringSeq("//"))
 				.add(new Not(new Reference("eol")))
 				.add(new Reference("eol")));
 		g.add(
@@ -249,27 +270,7 @@ public class GrammarParser {
 				.add(new Sequence().add(new Terminal((byte)0x0D)).add(new Terminal((byte)0x0A)))
 				.add(new Terminal((byte)0x0A))
 				.drop());
-		BranchingStack<Object> rules = g.parse("root", stream);
-		Grammar after = new Grammar();
-		while (rules != null) {
-			Node base = (Node) rules.top();
-			rules = rules.pop();
-			String name = (String) rules.top();
-			rules = rules.pop();
-			after.add(
-				name, 
-				new Capture(
-					base, 
-					callbacks.getOrDefault(
-						name, 
-						new Callback() {
-							@Override
-							public void accept(Store store) {}
-						}
-					)
-				)
-			);
-		}
+		Grammar after = (Grammar) g.parse("root", new Stream(stream), new Grammar());
 		System.out.println(String.format("Final grammar:\n%s\n", after));
 		return after;
 	}

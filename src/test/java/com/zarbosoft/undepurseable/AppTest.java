@@ -7,10 +7,13 @@ import java.util.HashMap;
 
 import org.junit.Test;
 
-import com.zarbosoft.undepurseable.nodes.Capture;
+import com.zarbosoft.undepurseable.bytes.Capture;
+import com.zarbosoft.undepurseable.bytes.Grammar;
+import com.zarbosoft.undepurseable.bytes.GrammarParser;
+import com.zarbosoft.undepurseable.bytes.Terminal;
+import com.zarbosoft.undepurseable.bytes.internal.Callback;
 import com.zarbosoft.undepurseable.nodes.Reference;
 import com.zarbosoft.undepurseable.nodes.Sequence;
-import com.zarbosoft.undepurseable.nodes.Terminal;
 import com.zarbosoft.undepurseable.nodes.Union;
 
 import junit.framework.TestCase;
@@ -23,10 +26,10 @@ public class AppTest extends TestCase
 		grammar.add(
 			"root", 
 			new Union()
-				.add(Sequence.string("zarolous"))
+				.add(Grammar.stringSeq("zarolous"))
 				.add(new Union()
-					.add(Sequence.string("zarolously")
-					.add(Sequence.string("zindictive")))));
+					.add(Grammar.stringSeq("zarolously")
+					.add(Grammar.stringSeq("zindictive")))));
 		grammar.parse("root", "zarolous");
 	}
 	
@@ -51,7 +54,7 @@ public class AppTest extends TestCase
 				}
 			)
 		);
-		assertEquals("azz", grammar.parse("two", "azz").top().toString());
+		assertEquals("azz", grammar.parse("two", "azz").toString());
 	}
 
 	@Test
@@ -71,7 +74,7 @@ public class AppTest extends TestCase
 				}
 			)
 		);
-		assertEquals("za", grammar.parse("one", "za").top().toString());
+		assertEquals("za", grammar.parse("one", "za").toString());
 	}
 	
 	@Test

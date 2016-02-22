@@ -1,65 +1,26 @@
 package com.zarbosoft.undepurseable.internal;
 
-public class Store {
-	protected BranchingStack<Object> stack;
-	private BranchingStack<Clip> data;
 
-	public Store() { 
-		stack = null;
-		data = new BranchingStack<Clip>(new Clip());
-	}
+public interface Store {
 
-	private Store(Store other) { 
-		stack = other.stack;
-		data = other.data;
-	}
+	Store split();
+
+	default void popData() { this.popData(false); }
 	
-	public Store split() {
-		return new Store(this);
-	}
+	void popData(boolean combine);
 
-	public Clip popData() {
-		Clip out = data.top();
-		data = data.pop();
-		return out;
-	}
+	Store pushData();
 
-	public Clip topData() {
-		return data.top();
-	}
+	void injectDataStack(long size);
 
-	public void addData(Clip top) {
-		this.data = this.data.set(this.data.top().cat(top));
-	}
+	Object popStack();
 
-	public Store pushData() {
-		data = data.push(new Clip());
-		return this;
-	}
+	Store pushStack(Object o);
 
-	public void injectDataStack(long size) {
-		Clip temp = data.top();
-		data = data.pop();
-		for (long i = 0; i < size; ++i) pushData();
-		data = data.push(temp);
-	}
+	void addData(Object storeData);
 
-	public void setData(Clip c) {
-		this.data = this.data.set(c);
-	}
-	
-	public Object popStack() {
-		Object out = stack.top();
-		stack = stack.pop();
-		return out;
-	}
-	
-	public Store pushStack(Object o) {
-		if (stack == null) {
-			stack = new BranchingStack<Object>(o);
-		} else {
-			stack = stack.push(o);
-		}
-		return this;
-	}
+	boolean hasOneResult();
+
+	Object takeResult();
+
 }

@@ -50,4 +50,8 @@ public class BranchingStack<T> {
 		if (parent != null) text = parent.toString(text);
 		return String.format("[%s]", text);
 	}
+
+	public boolean isLast() {
+		return parent == null;
+	}
 }

@@ -1,7 +1,7 @@
 package com.zarbosoft.undepurseable.internal;
 
 public interface Parent {
-	void advance(Store store);
+	void advance(Store storeI);
 	void error(TerminalReader leaf);
 	String buildPath(String rep);
 	long size(Parent stopAt, long start);
