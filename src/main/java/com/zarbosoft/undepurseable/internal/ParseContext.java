@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import com.zarbosoft.undepurseable.source.SourceStream;
-
 public class ParseContext {
 	public ParseContext(GrammarPrivate grammar, SourceStream stream) throws IOException {
 		this.grammar = grammar;

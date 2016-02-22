@@ -1,9 +1,9 @@
 package com.zarbosoft.undepurseable.bytes;
 
 import com.zarbosoft.undepurseable.bytes.internal.Callback;
+import com.zarbosoft.undepurseable.internal.BaseCapture;
 import com.zarbosoft.undepurseable.internal.Node;
 import com.zarbosoft.undepurseable.internal.Store;
-import com.zarbosoft.undepurseable.nodes.BaseCapture;
 
 public class Capture extends BaseCapture {
 

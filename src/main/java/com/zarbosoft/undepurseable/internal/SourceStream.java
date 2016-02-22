@@ -1,8 +1,6 @@
-package com.zarbosoft.undepurseable.source;
+package com.zarbosoft.undepurseable.internal;
 
 import java.io.IOException;
-
-import com.zarbosoft.undepurseable.internal.Position;
 
 public interface SourceStream {
 

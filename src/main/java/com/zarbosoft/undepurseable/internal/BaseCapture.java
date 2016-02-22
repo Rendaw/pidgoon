@@ -1,12 +1,11 @@
-package com.zarbosoft.undepurseable.nodes;
+package com.zarbosoft.undepurseable.internal;
 
 import java.util.Map;
 
-import com.zarbosoft.undepurseable.internal.BaseParent;
-import com.zarbosoft.undepurseable.internal.Node;
-import com.zarbosoft.undepurseable.internal.Parent;
-import com.zarbosoft.undepurseable.internal.ParseContext;
-import com.zarbosoft.undepurseable.internal.Store;
+import com.zarbosoft.undepurseable.nodes.Reference;
+import com.zarbosoft.undepurseable.nodes.Repeat;
+import com.zarbosoft.undepurseable.nodes.Sequence;
+import com.zarbosoft.undepurseable.nodes.Union;
 import com.zarbosoft.undepurseable.nodes.Reference.RefParent;
 
 public abstract class BaseCapture extends Node {

@@ -9,7 +9,6 @@ import com.zarbosoft.undepurseable.GrammarTooAmbiguous;
 import com.zarbosoft.undepurseable.InvalidGrammar;
 import com.zarbosoft.undepurseable.InvalidStream;
 import com.zarbosoft.undepurseable.Stats;
-import com.zarbosoft.undepurseable.source.SourceStream;
 
 public class GrammarPrivate {
 	private Map<String, Node> nodes = new HashMap<>();

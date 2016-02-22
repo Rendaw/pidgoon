@@ -10,8 +10,8 @@ import com.zarbosoft.undepurseable.bytes.internal.ClipStore;
 import com.zarbosoft.undepurseable.bytes.internal.Stream;
 import com.zarbosoft.undepurseable.internal.GrammarPrivate;
 import com.zarbosoft.undepurseable.internal.Node;
+import com.zarbosoft.undepurseable.internal.SourceStream;
 import com.zarbosoft.undepurseable.nodes.Sequence;
-import com.zarbosoft.undepurseable.source.SourceStream;
 
 public class Grammar {
 	// TODO builder

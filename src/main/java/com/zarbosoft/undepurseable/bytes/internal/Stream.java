@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.zarbosoft.undepurseable.internal.Position;
-import com.zarbosoft.undepurseable.source.SourceStream;
+import com.zarbosoft.undepurseable.internal.SourceStream;
 
 public class Stream implements SourceStream {
 
