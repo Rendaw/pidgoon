@@ -2,22 +2,23 @@ package com.zarbosoft.pidgoon.internal;
 
 import java.util.Map;
 
-import com.zarbosoft.pidgoon.nodes.Reference;
+import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.nodes.Repeat;
 import com.zarbosoft.pidgoon.nodes.Sequence;
 import com.zarbosoft.pidgoon.nodes.Union;
-import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.source.Store;
 
-public abstract class BaseCapture extends Node {
+public abstract class Operator extends Node {
 	private Node root;
+	public final String name;
 
-	public BaseCapture(Node root) {
+	public Operator(String name, Node root) {
 		super();
+		this.name = name;
 		this.root = root;
 	}
 	
-	protected abstract void callback(Store store);
+	protected abstract void callback(Store store, Map<String, Object> callbacks);
 
 	@Override
 	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
@@ -26,14 +27,14 @@ public abstract class BaseCapture extends Node {
 			@Override
 			public void advance(Store store) {
 				if (cut) parent.cut();
-				callback(store);
+				callback(store, context.callbacks);
 				store.popData(!drop);
 				parent.advance(store);
 			}
 
 			@Override
 			public String buildPath(String subpath) {
-				return parent.buildPath(String.format("capture . %s", subpath));
+				return parent.buildPath(String.format("op . %s", subpath));
 			}
 		}, seen);
 	}

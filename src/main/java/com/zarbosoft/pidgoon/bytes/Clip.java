@@ -1,4 +1,4 @@
-package com.zarbosoft.pidgoon.bytes.internal;
+package com.zarbosoft.pidgoon.bytes;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

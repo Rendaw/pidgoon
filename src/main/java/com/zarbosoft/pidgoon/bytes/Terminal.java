@@ -10,8 +10,6 @@ import com.google.common.collect.ImmutableRangeSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.zarbosoft.pidgoon.InvalidGrammar;
-import com.zarbosoft.pidgoon.bytes.internal.ClipStore;
-import com.zarbosoft.pidgoon.bytes.internal.Position;
 import com.zarbosoft.pidgoon.internal.Aux;
 import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;

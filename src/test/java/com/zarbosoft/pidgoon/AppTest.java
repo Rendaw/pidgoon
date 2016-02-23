@@ -1,17 +1,15 @@
 package com.zarbosoft.pidgoon;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
 import org.junit.Test;
 
-import com.zarbosoft.pidgoon.bytes.Capture;
+import com.google.common.collect.ImmutableMap;
+import com.zarbosoft.pidgoon.bytes.Callback;
 import com.zarbosoft.pidgoon.bytes.Grammar;
-import com.zarbosoft.pidgoon.bytes.GrammarParser;
+import com.zarbosoft.pidgoon.bytes.GrammarFile;
+import com.zarbosoft.pidgoon.bytes.Parse;
 import com.zarbosoft.pidgoon.bytes.Terminal;
-import com.zarbosoft.pidgoon.bytes.internal.Callback;
 import com.zarbosoft.pidgoon.nodes.Reference;
 import com.zarbosoft.pidgoon.nodes.Sequence;
 import com.zarbosoft.pidgoon.nodes.Union;
@@ -26,11 +24,14 @@ public class AppTest extends TestCase
 		grammar.add(
 			"root", 
 			new Union()
-				.add(Grammar.stringSeq("zarolous"))
+				.add(Parse.stringSeq("zarolous"))
 				.add(new Union()
-					.add(Grammar.stringSeq("zarolously")
-					.add(Grammar.stringSeq("zindictive")))));
-		grammar.parse("root", "zarolous");
+					.add(Parse.stringSeq("zarolously")
+					.add(Parse.stringSeq("zindictive")))));
+		new Parse<>()
+			.grammar(grammar)
+			.node("root")
+			.parse("zarolous");
 	}
 	
 	@Test
@@ -47,14 +48,19 @@ public class AppTest extends TestCase
 		);
 		grammar.add(
 			"two", 
-			new Capture(
-				new Reference("one"),
-				s -> {
-					s.pushStack(s.topData().toString());
-				}
-			)
+			new Reference("one")
 		);
-		assertEquals("azz", grammar.parse("two", "azz").toString());
+		Object result = new Parse<>()
+			.grammar(grammar)
+			.node("two")
+			.callbacks(new ImmutableMap.Builder<String, Callback>()
+				.put("two", s -> {
+					s.pushStack(s.topData().toString());
+				})
+				.build()
+			)
+			.parse("azz");
+		assertEquals("azz", result);
 	}
 
 	@Test
@@ -62,48 +68,48 @@ public class AppTest extends TestCase
 		Grammar grammar = new Grammar();
 		grammar.add(
 			"one", 
-			new Capture(
-				new Sequence()
-					.add(new Union()
-						.add(Terminal.fromChar('z'))
-						.add(Terminal.fromChar('z'))
-					)
-					.add(Terminal.fromChar('a')),
-				s -> {
-					s.pushStack(s.topData().toString());
-				}
-			)
+			new Sequence()
+				.add(new Union()
+					.add(Terminal.fromChar('z'))
+					.add(Terminal.fromChar('z'))
+				)
+				.add(Terminal.fromChar('a'))
 		);
-		assertEquals("za", grammar.parse("one", "za").toString());
+		Object result = new Parse<>()
+			.grammar(grammar)
+			.node("one")
+			.callbacks(new ImmutableMap.Builder<String, Callback>()
+				.put("one", s -> {
+					s.pushStack(s.topData().toString());
+				})
+				.build()
+			)
+			.parse("za");
+		assertEquals("za", result);
 	}
 	
 	@Test
 	public void testGrammarFile() throws IOException {
-		GrammarParser
-			.parse(
-				new ByteArrayInputStream("rule : 'h' 'i';\n\n".getBytes(StandardCharsets.UTF_8)),
-				new HashMap<String, Callback>()
+		new Parse<>()
+			.grammar(GrammarFile.parse()
+				.parse("rule : 'h' 'i';\n\n")
 			)
-			.parse("rule", "hi"); 
-		
+			.node("rule")
+			.parse("hi"); 
 	}
 
 	@Test
 	public void testGrammarFile2() throws IOException {
-		GrammarParser
-			.parse(
-				new ByteArrayInputStream("root : WS arrayBody;".getBytes(StandardCharsets.UTF_8)),
-				new HashMap<String, Callback>()
-			);
+		GrammarFile
+			.parse()
+			.parse("root : WS arrayBody;");
 	}
 	
 	@Test
 	public void testGrammarFile3() throws IOException {
-		GrammarParser
-			.parse(
-				new ByteArrayInputStream("WS : #([ \\t\\n] | '*' ( ~[*\\\\] | '\\\\' . )* '*')*;".getBytes(StandardCharsets.UTF_8)),
-				new HashMap<String, Callback>()
-			);
+		GrammarFile
+			.parse()
+			.parse("WS : #([ \\t\\n] | '*' ( ~[*\\\\] | '\\\\' . )* '*')*;");
 	}
 
 }

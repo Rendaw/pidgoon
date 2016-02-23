@@ -1,22 +1,23 @@
-package com.zarbosoft.pidgoon.internal;
+package com.zarbosoft.pidgoon;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.zarbosoft.pidgoon.GrammarTooAmbiguous;
-import com.zarbosoft.pidgoon.InvalidGrammar;
-import com.zarbosoft.pidgoon.InvalidStream;
-import com.zarbosoft.pidgoon.Stats;
+import com.zarbosoft.pidgoon.internal.Node;
+import com.zarbosoft.pidgoon.internal.Operator;
+import com.zarbosoft.pidgoon.internal.Parent;
+import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.internal.TerminalReader;
 import com.zarbosoft.pidgoon.source.Position;
 import com.zarbosoft.pidgoon.source.Store;
 
-public class GrammarPrivate {
-	private Map<String, Node> nodes = new HashMap<>();
+public class Grammar {
+	private Map<String, Operator> nodes = new HashMap<>();
 	
-	public void add(String name, Node node) {
-		nodes.put(name, node);
+	public void add(Operator node) {
+		nodes.put(node.name, node);
 	}
 
 	public Node getNode(String node) {
@@ -30,8 +31,8 @@ public class GrammarPrivate {
 			.collect(Collectors.joining("\n"));
 	}
 	
-	public ParseContext prepare(String node, Position initialPosition, Store initialStore) throws IOException {
-		final ParseContext context = new ParseContext(this, initialPosition);
+	public ParseContext prepare(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore) throws IOException {
+		final ParseContext context = new ParseContext(this, initialPosition, callbacks);
 		getNode(node).context(context, initialStore, new Parent() {
 			@Override
 			public void error(TerminalReader leaf) {
@@ -93,12 +94,12 @@ public class GrammarPrivate {
 		return context.preferredResult;
 	}
 
-	public Object parse(String node, Position initialPosition, Store initialStore) throws IOException {
-		return parse(node, initialPosition, initialStore, null);
+	public Object parse(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore) throws IOException {
+		return parse(node, initialPosition, callbacks, initialStore, null);
 	}
 	
-	public Object parse(String node, Position initialPosition, Store initialStore, Stats stats) throws IOException {
-		ParseContext context = prepare(node, initialPosition, initialStore);
+	public Object parse(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore, Stats stats) throws IOException {
+		ParseContext context = prepare(node, initialPosition, callbacks, initialStore);
 		if (context.position.isEOF()) return null;
 		while (!context.position.isEOF()) {
 			/*

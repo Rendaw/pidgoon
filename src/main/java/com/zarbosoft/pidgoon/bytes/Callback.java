@@ -1,4 +1,4 @@
-package com.zarbosoft.pidgoon.bytes.internal;
+package com.zarbosoft.pidgoon.bytes;
 
 import com.zarbosoft.pidgoon.source.Store;
 
