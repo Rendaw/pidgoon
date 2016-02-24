@@ -1,6 +1,5 @@
 package com.zarbosoft.pidgoon;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,7 +30,7 @@ public class Grammar {
 			.collect(Collectors.joining("\n"));
 	}
 	
-	public ParseContext prepare(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore) throws IOException {
+	public ParseContext prepare(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore) {
 		final ParseContext context = new ParseContext(this, initialPosition, callbacks);
 		getNode(node).context(context, initialStore, new Parent() {
 			@Override
@@ -64,11 +63,11 @@ public class Grammar {
 		return context;
 	}
 	
-	public void step(ParseContext context) throws IOException {
+	public void step(ParseContext context) {
 		step(context, null);
 	}
 	
-	public void step(ParseContext context, Stats stats) throws IOException {
+	public void step(ParseContext context, Stats stats) {
 		if (context.position.isEOF()) throw new RuntimeException("Cannot step; end of file reached.");
 		if (stats != null) {
 			stats.totalLeaves += context.outLeaves.size();
@@ -94,11 +93,11 @@ public class Grammar {
 		return context.preferredResult;
 	}
 
-	public Object parse(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore) throws IOException {
+	public Object parse(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore) {
 		return parse(node, initialPosition, callbacks, initialStore, null);
 	}
 	
-	public Object parse(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore, Stats stats) throws IOException {
+	public Object parse(String node, Position initialPosition, Map<String, Object> callbacks, Store initialStore, Stats stats) {
 		ParseContext context = prepare(node, initialPosition, callbacks, initialStore);
 		if (context.position.isEOF()) return null;
 		while (!context.position.isEOF()) {

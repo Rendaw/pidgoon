@@ -1,13 +1,11 @@
 package com.zarbosoft.pidgoon.events;
 
-import java.io.IOException;
-
 class Position implements com.zarbosoft.pidgoon.source.Position {
 
 	public Event event;
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Position advance() throws IOException {
+	public com.zarbosoft.pidgoon.source.Position advance() {
 		return this;
 	}
 

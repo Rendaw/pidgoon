@@ -1,6 +1,5 @@
 package com.zarbosoft.pidgoon.internal;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -12,7 +11,7 @@ import com.zarbosoft.pidgoon.Grammar;
 import com.zarbosoft.pidgoon.source.Position;
 
 public class ParseContext {
-	public ParseContext(Grammar grammar, Position initialPosition, Map<String, Object> callbacks) throws IOException {
+	public ParseContext(Grammar grammar, Position initialPosition, Map<String, Object> callbacks) {
 		this.grammar = grammar;
 		this.callbacks = callbacks;
 		if (callbacks == null) this.callbacks = new HashMap<>();

@@ -61,5 +61,9 @@ public class ClipStore extends BaseStore {
 	public void record(com.zarbosoft.pidgoon.source.Position position) {
 		addData(((Position)position).getStoreData());
 	}
+
+	public Object peekStack() {
+		return stack == null ? null : stack.top();
+	}
 	
 }

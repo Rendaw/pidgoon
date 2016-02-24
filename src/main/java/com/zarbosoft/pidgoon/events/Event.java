@@ -2,6 +2,8 @@ package com.zarbosoft.pidgoon.events;
 
 public interface Event {
 
-	boolean matches(Event event);
+	default boolean matches(Event event) {
+		return getClass() == event.getClass();
+	}
 
 }

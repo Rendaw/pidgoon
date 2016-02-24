@@ -2,6 +2,7 @@ package com.zarbosoft.pidgoon.bytes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
 import com.google.common.base.Strings;
@@ -17,13 +18,17 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 	private long line = 0;
 	private long column = 0;
 
-	public Position(InputStream stream) throws IOException {
+	public Position(InputStream stream) {
 		this.stream = stream;
 		buf = new byte[10 * 1024];
-		bufUsed = stream.read(buf, 0, buf.length);
+		try {
+			bufUsed = stream.read(buf, 0, buf.length);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
-	private Position(Position last) throws IOException {
+	private Position(Position last) {
 		stream = last.stream;
 		if (last.localOffset + 1 < last.bufUsed) {
 			bufUsed = last.bufUsed;
@@ -31,7 +36,11 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 			localOffset = last.localOffset + 1;
 		} else {
 			buf = new byte[10 * 1024];
-			bufUsed = stream.read(buf, 0, buf.length);
+			try {
+				bufUsed = stream.read(buf, 0, buf.length);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
 			localOffset = 0;
 		}
 		absolute = last.absolute + 1;
@@ -63,7 +72,7 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 	}
 
 	@Override
-	public Position advance() throws IOException {
+	public Position advance() {
 		if (bufUsed == -1) {
 			return null;
 		}
