@@ -22,11 +22,11 @@ public class Reference extends Node {
 
 		public void advance(Store store) {
 			if (cut) originalParent.cut();
-			store.popData(!drop);
+			store.pop(!drop);
 			originalParent.advance(store.split());
 			for (Parent p : loopParents) {
-				Store splitStore = store.split();
-				splitStore.injectDataStack(p.size(this, 1));
+				Store splitStore = store.split(); // TODO split twice - fix?
+				splitStore.inject(p.size(this, 1));
 				p.advance(splitStore.split());
 			}
 		}
@@ -78,7 +78,7 @@ public class Reference extends Node {
 		seen.put(name, subParent);
 		get(context).context(
 			context,
-			store.pushData(), 
+			store.push(), 
 			subParent, seen);
 	}
 	

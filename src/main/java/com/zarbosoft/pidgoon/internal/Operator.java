@@ -10,11 +10,9 @@ import com.zarbosoft.pidgoon.source.Store;
 
 public abstract class Operator extends Node {
 	private Node root;
-	public final String name;
 
-	public Operator(String name, Node root) {
+	public Operator(Node root) {
 		super();
-		this.name = name;
 		this.root = root;
 	}
 	
@@ -22,13 +20,13 @@ public abstract class Operator extends Node {
 
 	@Override
 	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
-		root.context(context, store.pushData(), new BaseParent(parent) {
+		root.context(context, store.push(), new BaseParent(parent) {
 			
 			@Override
 			public void advance(Store store) {
 				if (cut) parent.cut();
 				callback(store, context.callbacks);
-				store.popData(!drop);
+				store.pop(!drop);
 				parent.advance(store);
 			}
 

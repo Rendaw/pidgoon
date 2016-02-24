@@ -41,13 +41,13 @@ public class Repeat extends Node {
 
 			public void advance(Store store) {
 				if (cut) parent.cut();
-				store.popData(!drop);
+				store.pop(!drop);
 				long nextCount = count + 1;
 				if ((max != null) && (nextCount == max)) {
 					parent.advance(store);
 					return;
 				} else {
-					root.context(context, store.split().pushData(), new RepParent(nextCount));
+					root.context(context, store.split().push(), new RepParent(nextCount));
 					if ((min == null) || (nextCount >= min))
 						parent.advance(store.split());
 				}
@@ -63,7 +63,7 @@ public class Repeat extends Node {
 					subpath));
 			}
 		}
-		root.context(context, store.split().pushData(), new RepParent(0), seen);
+		root.context(context, store.split().push(), new RepParent(0), seen);
 		if ((min == null) || (min == 0))
 			parent.advance(store.split());
 	}

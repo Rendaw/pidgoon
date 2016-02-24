@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.zarbosoft.pidgoon.internal.NamedOperator;
 import com.zarbosoft.pidgoon.internal.Node;
-import com.zarbosoft.pidgoon.internal.Operator;
 import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.internal.TerminalReader;
@@ -14,9 +14,9 @@ import com.zarbosoft.pidgoon.source.Position;
 import com.zarbosoft.pidgoon.source.Store;
 
 public class Grammar {
-	private Map<String, Operator> nodes = new HashMap<>();
+	private Map<String, NamedOperator> nodes = new HashMap<>();
 	
-	public void add(Operator node) {
+	public void add(NamedOperator node) {
 		nodes.put(node.name, node);
 	}
 

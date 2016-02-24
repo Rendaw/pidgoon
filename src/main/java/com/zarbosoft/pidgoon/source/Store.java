@@ -5,22 +5,22 @@ public interface Store {
 
 	Store split();
 
-	default void popData() { this.popData(false); }
+	default void pop() { this.pop(false); }
 	
-	void popData(boolean combine);
+	void pop(boolean combine);
 
-	Store pushData();
+	Store push();
 
-	void injectDataStack(long size);
+	void inject(long size);
 
 	Object popStack();
 
 	Store pushStack(Object o);
 
-	void addData(Object storeData);
-
 	boolean hasOneResult();
 
 	Object takeResult();
+
+	void record(Position position);
 
 }

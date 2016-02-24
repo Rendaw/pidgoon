@@ -12,6 +12,4 @@ public interface Position {
 
 	long getAbsolute();
 
-	Object getStoreData();
-
 }

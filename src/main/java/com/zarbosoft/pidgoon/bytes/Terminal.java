@@ -94,7 +94,7 @@ public class Terminal extends Node {
 				Position position = (Position) context.position;
 				if (value.contains(position.get())) {
 					if (cut) parent.cut();
-					if (!drop) store.addData(position.getStoreData());
+					if (!drop) store.record(position);
 					parent.advance(store);
 				} else {
 					parent.error(this);

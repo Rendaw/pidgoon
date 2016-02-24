@@ -84,8 +84,7 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 		return absolute;
 	}
 
-	@Override
-	public Object getStoreData() {
+	public Clip getStoreData() {
 		return new Clip(get());
 	}
 }

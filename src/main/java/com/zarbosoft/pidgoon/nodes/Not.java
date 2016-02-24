@@ -56,7 +56,7 @@ public class Not extends Node {
 					parent.error(this);
 					return;
 				}
-				if (!drop) store.addData(context.position.getStoreData());
+				if (!drop) store.record(context.position);
 				if (mutable.value == true) {
 					if (cut) parent.cut();
 					parent.advance(store);

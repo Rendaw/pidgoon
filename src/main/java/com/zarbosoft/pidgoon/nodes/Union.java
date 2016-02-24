@@ -27,11 +27,11 @@ public class Union extends Node {
 		Pair.enumerate(children).forEach(p -> {
 			Map<String, RefParent> newSeen = new HashMap<>();
 			newSeen.putAll(seen);
-			p.second.context(context, store.split().pushData(), new BaseParent(parent) {
+			p.second.context(context, store.split().push(), new BaseParent(parent) {
 				@Override
 				public void advance(Store store) {
 					if (cut) parent.cut();
-					store.popData(!drop);
+					store.pop(!drop);
 					parent.advance(store);
 				}
 

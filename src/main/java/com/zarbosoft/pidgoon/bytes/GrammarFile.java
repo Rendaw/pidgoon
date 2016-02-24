@@ -2,6 +2,7 @@ package com.zarbosoft.pidgoon.bytes;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
+import com.zarbosoft.pidgoon.internal.BaseParse;
 import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.nodes.Not;
 import com.zarbosoft.pidgoon.nodes.Reference;
@@ -205,7 +206,7 @@ public class GrammarFile {
 		);
 	}
 	
-	public static Parse<Grammar> parse() {
+	public static BaseParse<Grammar> parse() {
 		return new Parse<Grammar>()
 			.grammar(grammar)
 			.node("root")
