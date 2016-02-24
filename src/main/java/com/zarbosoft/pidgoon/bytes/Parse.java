@@ -1,5 +1,6 @@
 package com.zarbosoft.pidgoon.bytes;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -9,14 +10,17 @@ import com.google.common.primitives.Bytes;
 import com.zarbosoft.pidgoon.internal.BaseParse;
 import com.zarbosoft.pidgoon.nodes.Sequence;
 
-public class Parse<O> extends BaseParse<O> {
+public class Parse<O> extends BaseParse<Parse<O>> {
 	private Parse(Parse<O> other) {
 		super(other);
 	}
 
 	public Parse() {}
 
-	@Override
+	public O parse(String string) throws IOException {
+		return parse(new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8)));
+	}
+	
 	@SuppressWarnings("unchecked")
 	public O parse(InputStream stream) throws IOException {
 		ClipStore store = new ClipStore();
@@ -38,8 +42,7 @@ public class Parse<O> extends BaseParse<O> {
 	}
 
 	@Override
-	protected BaseParse<O> split() {
+	protected Parse<O> split() {
 		return new Parse<O>(this);
 	}
-
 }

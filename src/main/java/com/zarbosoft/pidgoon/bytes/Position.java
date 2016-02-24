@@ -79,11 +79,6 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 		return buf[localOffset];
 	}
 
-	@Override
-	public long getAbsolute() {
-		return absolute;
-	}
-
 	public Clip getStoreData() {
 		return new Clip(get());
 	}

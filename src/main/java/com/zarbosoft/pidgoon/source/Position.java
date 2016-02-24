@@ -9,7 +9,4 @@ public interface Position {
 	Position advance() throws IOException;
 
 	boolean isEOF();
-
-	long getAbsolute();
-
 }
