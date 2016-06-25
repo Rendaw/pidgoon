@@ -8,6 +8,7 @@ import com.zarbosoft.pidgoon.nodes.Reference;
 import com.zarbosoft.pidgoon.nodes.Repeat;
 import com.zarbosoft.pidgoon.nodes.Sequence;
 import com.zarbosoft.pidgoon.nodes.Union;
+import com.zarbosoft.pidgoon.nodes.Wildcard;
 
 public class GrammarFile {
 	private final static Grammar grammar;

@@ -1,4 +1,4 @@
-package com.zarbosoft.pidgoon.bytes;
+package com.zarbosoft.pidgoon.nodes;
 
 import java.util.Map;
 

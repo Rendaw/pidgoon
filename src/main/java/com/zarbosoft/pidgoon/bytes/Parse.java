@@ -1,7 +1,6 @@
 package com.zarbosoft.pidgoon.bytes;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -17,12 +16,12 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 
 	public Parse() {}
 
-	public O parse(String string) throws IOException {
+	public O parse(String string) {
 		return parse(new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8)));
 	}
 	
 	@SuppressWarnings("unchecked")
-	public O parse(InputStream stream) throws IOException {
+	public O parse(InputStream stream) {
 		ClipStore store = new ClipStore();
 		if (initialStack != null)
 			store.pushStack(initialStack.get());

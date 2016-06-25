@@ -4,6 +4,8 @@ import com.zarbosoft.pidgoon.internal.BaseStore;
 import com.zarbosoft.pidgoon.source.Position;
 
 public class Store extends BaseStore {
+	
+	private Event top = null;
 
 	public Store(Store store) {
 		super(store);
@@ -27,6 +29,12 @@ public class Store extends BaseStore {
 	public void inject(long size) {}
 
 	@Override
-	public void record(Position position) {}
+	public void record(Position position) {
+		top = ((com.zarbosoft.pidgoon.events.Position)position).get();
+	}
+
+	public Event top() {
+		return top;
+	}
 
 }
