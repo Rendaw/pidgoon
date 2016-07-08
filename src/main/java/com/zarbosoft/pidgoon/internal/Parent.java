@@ -3,9 +3,13 @@ package com.zarbosoft.pidgoon.internal;
 import com.zarbosoft.pidgoon.source.Store;
 
 public interface Parent {
-	void advance(Store storeI);
-	void error(TerminalReader leaf);
+	void advance(ParseContext step, Store store, Object cause);
+
+	void error(ParseContext step, Store store, Object cause);
+
 	String buildPath(String rep);
+
 	long size(Parent stopAt, long start);
-	void cut();
+
+	void cut(ParseContext step);
 }

@@ -5,10 +5,10 @@ import com.zarbosoft.pidgoon.source.Store;
 @FunctionalInterface
 public interface Callback {
 
-	public void accept(ClipStore store);
-	
-	default public void accept(Store store) {
-		accept((ClipStore)store);
+	public Store accept(ClipStore store);
+
+	default public Store accept(final Store store) {
+		return accept((ClipStore) store);
 	}
 
 }

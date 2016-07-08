@@ -1,36 +1,45 @@
 package com.zarbosoft.pidgoon.events;
 
 import com.zarbosoft.pidgoon.internal.BaseStore;
+import com.zarbosoft.pidgoon.internal.BranchingStack;
 import com.zarbosoft.pidgoon.source.Position;
 
 public class Store extends BaseStore {
-	
-	private Event top = null;
 
-	public Store(Store store) {
-		super(store);
-	}
+	private final Event top;
 
 	public Store() {
+		this.top = null;
+	}
+
+	public Store(final BranchingStack<Object> stack, final Event top) {
+		super(stack);
+		this.top = top;
 	}
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Store split() {
-		return new Store(this);
+	public com.zarbosoft.pidgoon.source.Store split(final BranchingStack<Object> stack) {
+		return new Store(stack, top);
 	}
 
 	@Override
-	public void pop(boolean combine) {}
+	public com.zarbosoft.pidgoon.source.Store pop(final boolean combine) {
+		return this;
+	}
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Store push() { return this; }
+	public com.zarbosoft.pidgoon.source.Store push() {
+		return this;
+	}
 
 	@Override
-	public void inject(long size) {}
+	public com.zarbosoft.pidgoon.source.Store inject(final long size) {
+		return this;
+	}
 
 	@Override
-	public void record(Position position) {
-		top = ((com.zarbosoft.pidgoon.events.Position)position).get();
+	public com.zarbosoft.pidgoon.source.Store record(final Position position) {
+		return new Store(stack, ((com.zarbosoft.pidgoon.events.Position) position).get());
 	}
 
 	public Event top() {

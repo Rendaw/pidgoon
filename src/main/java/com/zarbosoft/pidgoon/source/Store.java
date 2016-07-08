@@ -2,25 +2,24 @@ package com.zarbosoft.pidgoon.source;
 
 
 public interface Store {
+	default Store pop() {
+		return this.pop(false);
+	}
 
-	Store split();
-
-	default void pop() { this.pop(false); }
-	
-	void pop(boolean combine);
+	Store pop(boolean combine);
 
 	Store push();
 
-	void inject(long size);
+	Store inject(long size);
 
-	Object popStack();
+	<T> T stackTop();
+
+	Store popStack();
 
 	Store pushStack(Object o);
 
 	boolean hasOneResult();
 
-	Object takeResult();
-
-	void record(Position position);
+	Store record(Position position);
 
 }

@@ -4,6 +4,8 @@ import com.zarbosoft.pidgoon.internal.*;
 import com.zarbosoft.pidgoon.source.Position;
 import com.zarbosoft.pidgoon.source.Store;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,27 +30,25 @@ public class Grammar {
 
 	public ParseContext prepare(
 			final String node,
-			final Position initialPosition,
 			final Map<String, Object> callbacks,
 			final Store initialStore
 	) {
-		final ParseContext context = new ParseContext(this, initialPosition, callbacks);
+		final ParseContext context = new ParseContext(this, callbacks);
 		getNode(node).context(context, initialStore, new Parent() {
 			@Override
-			public void error(final TerminalReader leaf) {
-				context.errors.add(leaf);
+			public void error(final ParseContext step, final Store store, final Object cause) {
+				step.errors.add(cause);
 			}
 
 			@Override
-			public void advance(final Store store) {
-				if (store.hasOneResult())
-					context.results.add(store.takeResult());
+			public void advance(final ParseContext step, final Store store, final Object cause) {
+				if (store.hasOneResult() && step.result == null)
+					step.result = store.stackTop();
 			}
 
 			@Override
-			public void cut() {
-				context.outLeaves.clear();
-				context.leaves.clear();
+			public void cut(final ParseContext step) {
+				step.outLeaves.clear();
 			}
 
 			@Override
@@ -60,38 +60,29 @@ public class Grammar {
 			public long size(final Parent stopAt, final long start) {
 				throw new UnsupportedOperationException();
 			}
-		});
+		}, "<SOF>");
 		return context;
 	}
 
-	public void step(final ParseContext context) {
-		step(context, null);
-	}
-
-	public void step(final ParseContext context, final Stats stats) {
-		if (context.position.isEOF()) throw new RuntimeException("Cannot step; end of file reached.");
-		if (stats != null) {
-			stats.totalLeaves += context.outLeaves.size();
-			stats.maxLeaves = Math.max(stats.maxLeaves, context.outLeaves.size());
-			stats.steps += 1;
+	public ParseContext step(final ParseContext context, final Position position) {
+		if (position.isEOF()) throw new RuntimeException("Cannot step; end of file reached.");
+		final int leavesBefore = context.outLeaves.size();
+		final ParseContext nextStep = new ParseContext(context);
+		final Deque<State> leaves = new ArrayDeque<>();
+		leaves.addAll(context.outLeaves);
+		while (!leaves.isEmpty()) {
+			final State leaf = leaves.removeFirst();
+			leaf.parse(nextStep, position);
 		}
-		context.leaves.clear();
-		context.leaves.addAll(context.outLeaves);
-		context.outLeaves.clear();
-		context.results.clear();
-		while (!context.leaves.isEmpty()) {
-			final TerminalReader leaf = context.leaves.removeFirst();
-			leaf.parse();
-		}
-		if (context.outLeaves.size() >= 1000) throw new GrammarTooAmbiguous(context);
-		final Position nextPosition = context.position.advance();
-		if (!nextPosition.isEOF() && context.outLeaves.isEmpty()) throw new InvalidStream(context);
-		context.position = nextPosition;
-		if (!context.results.isEmpty()) context.preferredResult = context.results.get(0);
+		if (nextStep.outLeaves.size() >= 1000) throw new GrammarTooAmbiguous(nextStep, position);
+		if (nextStep.outLeaves.isEmpty() && nextStep.errors.size() == leavesBefore)
+			throw new InvalidStream(nextStep, position);
+		if (nextStep.result == null) nextStep.result = context.result;
+		return nextStep;
 	}
 
 	public Object finish(final ParseContext context) {
-		return context.preferredResult;
+		return context.result;
 	}
 
 	public Object parse(
@@ -100,29 +91,21 @@ public class Grammar {
 			final Map<String, Object> callbacks,
 			final Store initialStore
 	) {
-		return parse(node, initialPosition, callbacks, initialStore, null);
-	}
-
-	public Object parse(
-			final String node,
-			final Position initialPosition,
-			final Map<String, Object> callbacks,
-			final Store initialStore,
-			final Stats stats
-	) {
-		final ParseContext context = prepare(node, initialPosition, callbacks, initialStore);
-		if (context.position.isEOF()) return null;
-		while (!context.position.isEOF()) {
-			/*
+		Position position = initialPosition;
+		ParseContext context = prepare(node, callbacks, initialStore);
+		if (position.isEOF()) return null;
+		while (!position.isEOF()) {
 			System.out.println(String.format(
-					"%s\n%s\n\n",
-					context.position,
+					"%d\n%s\n%s\n\n",
+					context.hashCode(),
+					position,
 					context.outLeaves.stream()
 							.map(l -> l.toString())
 							.collect(Collectors.joining("\n"))
 			));
-			*/
-			step(context, stats);
+			context = step(context, position);
+			final Position previousPosition = position;
+			position = position.advance();
 		}
 		return finish(context);
 	}

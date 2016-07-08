@@ -3,44 +3,40 @@ package com.zarbosoft.pidgoon.internal;
 import com.zarbosoft.pidgoon.source.Store;
 
 public abstract class BaseStore implements Store {
-	protected BranchingStack<Object> stack;
+	protected final BranchingStack<Object> stack;
 
-	public BaseStore() { 
+	protected abstract Store split(BranchingStack<Object> stack);
+
+	public BaseStore() {
 		stack = null;
 	}
 
-	protected BaseStore(BaseStore other) { 
-		stack = other.stack;
+	protected BaseStore(final BranchingStack<Object> stack) {
+		this.stack = stack;
 	}
-	
+
 	@Override
-	public Object popStack() {
-		Object out = stack.top();
-		stack = stack.pop();
-		return out;
+	public <T> T stackTop() {
+		return (T) stack.top();
 	}
-	
+
 	@Override
-	public Store pushStack(Object o) {
+	public Store popStack() {
+		return split(stack.pop());
+	}
+
+	@Override
+	public Store pushStack(final Object o) {
 		if (stack == null) {
-			stack = new BranchingStack<Object>(o);
+			return split(new BranchingStack<>(o));
 		} else {
-			stack = stack.push(o);
+			return split(stack.push(o));
 		}
-		return this;
 	}
 
 	@Override
 	public boolean hasOneResult() {
 		return (stack != null) && stack.isLast();
 	}
-
-	@Override
-	public Object takeResult() {
-		Object out = stack.top();
-		stack = stack.pop();
-		return out;
-	}
-
 
 }

@@ -1,79 +1,57 @@
 package com.zarbosoft.pidgoon.nodes;
 
-import java.util.Map;
-
-import com.zarbosoft.pidgoon.internal.Mutable;
+import com.zarbosoft.pidgoon.internal.BaseParent;
 import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.ParseContext;
-import com.zarbosoft.pidgoon.internal.TerminalReader;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.source.Store;
 
-public class Not extends Node {
-	private Node root;
+import java.util.Map;
 
-	public Not(Node root) {
+public class Not extends Node {
+	private final Node root;
+
+	public Not(final Node root) {
 		this.root = root;
 	}
 
 	@Override
-	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
-		// Order is significant - custom terminal context behavior based on comparison
-		Mutable<Boolean> mutable = new Mutable<>(null);
-		root.context(context, store.split(), new Parent() {
-			public void error(TerminalReader leaf) {
-				mutable.value = true;
+	public void context(
+			final ParseContext context,
+			final Store store,
+			final Parent parent,
+			final Map<String, RefParent> seen,
+			final Object cause
+	) {
+		root.context(context, store.push(), new BaseParent(parent) {
+			@Override
+			public void error(final ParseContext step, final Store store, final Object cause) {
+				if (cut) parent.cut(step);
+				parent.advance(step, store.pop(!drop), cause);
 			}
 
 			@Override
-			public void advance(Store store) {
-				mutable.value = false;
+			public void advance(final ParseContext step, final Store store, final Object cause) {
+				store.pop(!drop);
+				super.error(step, store, cause);
 			}
 
 			@Override
-			public String buildPath(String subpath) {
-				return parent.buildPath("(ignore: not pattern)");
+			public String buildPath(final String subpath) {
+				return parent.buildPath(String.format("not . %s", subpath));
 			}
-
-			@Override
-			public long size(Parent stopAt, long start) {
-				return parent.size(stopAt, start + 1);
-			}
-
-			@Override
-			public void cut() {
-			}
-		}, seen);
-		context.outLeaves.add(new TerminalReader() {
-			@Override
-			public String toString() {
-				return parent.buildPath(String.format("not: %s", root));
-			}
-			@Override
-			public void parse() {
-				if (mutable.value == false) {
-					parent.error(this);
-					return;
-				}
-				if (!drop) store.record(context.position);
-				if (mutable.value == true) {
-					if (cut) parent.cut();
-					parent.advance(store);
-				} else {
-					context.outLeaves.add(this);
-				}
-			}
-		});
+		}, seen, cause);
 	}
 
 	public String toString() {
-		String out;
+		final String out;
 		if (!root.drop && (
 				(root instanceof Sequence) ||
-				(root instanceof Union) ||
-				(root instanceof Repeat))
-			) {
+						(root instanceof Union) ||
+						(root instanceof Repeat)
+		)
+				) {
 			out = String.format("~(%s)", root);
 		} else {
 			out = String.format("~%s", root);

@@ -6,21 +6,21 @@ import com.zarbosoft.pidgoon.source.Store;
 
 public class ClipStore extends BaseStore {
 
-	protected BranchingStack<Clip> data;
+	protected final BranchingStack<Clip> data;
 
 	public ClipStore() {
 		super();
 		data = new BranchingStack<>(new Clip());
 	}
 
-	private ClipStore(ClipStore base) {
-		super(base);
-		data = base.data;
+	private ClipStore(final BranchingStack<Object> stack, final BranchingStack<Clip> data) {
+		super(stack);
+		this.data = data;
 	}
 
 	@Override
-	public Store split() {
-		return new ClipStore(this);
+	protected Store split(final BranchingStack<Object> stack) {
+		return new ClipStore(stack, data);
 	}
 
 	public Clip topData() {
@@ -28,42 +28,34 @@ public class ClipStore extends BaseStore {
 	}
 
 	@Override
-	public void pop(boolean combine) {
-		Clip out = data.top();
-		data = data.pop();
+	public Store pop(final boolean combine) {
+		final Clip top = data.top();
+		final BranchingStack<Clip> above = data.pop();
 		if (combine)
-			addData(out);
-	}
-
-	public void addData(Clip top) {
-		this.data = this.data.set(this.data.top().cat(top));
+			return new ClipStore(stack, above.set(above.top().cat(top)));
+		else return new ClipStore(stack, above);
 	}
 
 	@Override
 	public BaseStore push() {
-		data = data.push(new Clip());
-		return this;
+		return new ClipStore(stack, data.push(new Clip()));
 	}
 
 	@Override
-	public void inject(long size) {
-		Clip temp = data.top();
-		data = data.pop();
-		for (long i = 0; i < size; ++i) push();
-		data = data.push(temp);
+	public Store inject(final long size) {
+		final Clip top = data.top();
+		BranchingStack<Clip> pointer = data.pop();
+		for (long i = 0; i < size; ++i) pointer = pointer.push(new Clip());
+		pointer = pointer.push(top);
+		return new ClipStore(stack, pointer);
 	}
 
-	public void setData(Clip c) {
-		this.data = this.data.set(c);
+	public Store setData(final Clip c) {
+		return new ClipStore(stack, this.data.set(c));
 	}
 
 	@Override
-	public void record(com.zarbosoft.pidgoon.source.Position position) {
-		addData(((Position)position).getStoreData());
+	public Store record(final com.zarbosoft.pidgoon.source.Position position) {
+		return new ClipStore(stack, data.set(data.top().cat(((Position) position).getStoreData())));
 	}
-
-	public Object peekStack() {
-		return stack == null ? null : stack.top();
-	}
-	
 }

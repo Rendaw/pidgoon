@@ -1,52 +1,53 @@
 package com.zarbosoft.pidgoon.nodes;
 
+import com.zarbosoft.pidgoon.internal.*;
+import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
+import com.zarbosoft.pidgoon.source.Store;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.zarbosoft.pidgoon.internal.BaseParent;
-import com.zarbosoft.pidgoon.internal.Node;
-import com.zarbosoft.pidgoon.internal.Pair;
-import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
-import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Store;
-
 public class Union extends Node {
 	List<Node> children = new ArrayList<>();
-	
-	public Union add(Node child) {
+
+	public Union add(final Node child) {
 		children.add(child);
 		return this;
 	}
 
 	@Override
-	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
+	public void context(
+			final ParseContext context,
+			final Store store,
+			final Parent parent,
+			final Map<String, RefParent> seen,
+			final Object cause
+	) {
 		Pair.enumerate(children).forEach(p -> {
-			Map<String, RefParent> newSeen = new HashMap<>();
+			final Map<String, RefParent> newSeen = new HashMap<>();
 			newSeen.putAll(seen);
-			p.second.context(context, store.split().push(), new BaseParent(parent) {
+			p.second.context(context, store.push(), new BaseParent(parent) {
 				@Override
-				public void advance(Store store) {
-					if (cut) parent.cut();
-					store.pop(!drop);
-					parent.advance(store);
+				public void advance(final ParseContext step, final Store store, final Object cause) {
+					if (cut) parent.cut(step);
+					parent.advance(step, store.pop(!drop), cause);
 				}
 
 				@Override
-				public String buildPath(String subpath) {
+				public String buildPath(final String subpath) {
 					return parent.buildPath(String.format("union|%d . %s", p.first + 1, subpath));
 				}
-			}, newSeen);
+			}, newSeen, cause);
 		});
 	}
-	
+
 	public String toString() {
-		String out = children.stream()
-			.map(c -> c.toString())
-			.collect(Collectors.joining(" | "));
+		final String out = children.stream()
+				.map(c -> c.toString())
+				.collect(Collectors.joining(" | "));
 		if (drop) return String.format("#(%s)", out);
 		return out;
 	}

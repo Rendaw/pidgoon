@@ -1,23 +1,23 @@
 package com.zarbosoft.pidgoon.events;
 
-import java.util.Map;
-
 import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Operator;
 import com.zarbosoft.pidgoon.source.Store;
 
-public class BakedOperator extends Operator {
-	
-	private Callback callback;
+import java.util.Map;
 
-	public BakedOperator(Node root, Callback callback) {
+public class BakedOperator extends Operator {
+
+	private final Callback callback;
+
+	public BakedOperator(final Node root, final Callback callback) {
 		super(root);
 		this.callback = callback;
 	}
 
 	@Override
-	protected void callback(Store store, Map<String, Object> callbacks) {
-		callback.accept(store);
+	protected Store callback(final Store store, final Map<String, Object> callbacks) {
+		return callback.accept(store);
 	}
 
 }

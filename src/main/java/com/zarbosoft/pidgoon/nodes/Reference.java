@@ -1,14 +1,13 @@
 package com.zarbosoft.pidgoon.nodes;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.ParseContext;
-import com.zarbosoft.pidgoon.internal.TerminalReader;
 import com.zarbosoft.pidgoon.source.Store;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Reference extends Node {
 
@@ -16,51 +15,49 @@ public class Reference extends Node {
 		Parent originalParent;
 		List<Parent> loopParents = new ArrayList<>();
 
-		public RefParent(Parent parent) {
+		public RefParent(final Parent parent) {
 			originalParent = parent;
 		}
 
-		public void advance(Store store) {
-			if (cut) originalParent.cut();
-			store.pop(!drop);
-			originalParent.advance(store.split());
-			for (Parent p : loopParents) {
-				Store splitStore = store.split(); // TODO split twice - fix?
-				splitStore.inject(p.size(this, 1));
-				p.advance(splitStore.split());
+		public void advance(final ParseContext step, final Store store, final Object cause) {
+			if (cut) originalParent.cut(step);
+			final Store tempStore = store.pop(!drop);
+			originalParent.advance(step, tempStore, cause);
+			for (final Parent p : loopParents) {
+				p.advance(step, tempStore.inject(p.size(this, 1)), cause);
 			}
 		}
 
-		public String buildPath(String subpath) {
+		public String buildPath(final String subpath) {
 			return originalParent.buildPath(String.format("<%s> . %s", name, subpath));
 		}
 
 		@Override
-		public void error(TerminalReader leaf) {
-			originalParent.error(leaf);
+		public void error(final ParseContext step, final Store store, final Object cause) {
+			originalParent.error(step, store, cause);
 		}
 
 		@Override
-		public long size(Parent stopAt, long start) {
+		public long size(final Parent stopAt, final long start) {
 			if (stopAt == this) return start;
 			return originalParent.size(stopAt, start + 1);
 		}
 
 		@Override
-		public void cut() {
-			originalParent.cut();
+		public void cut(final ParseContext step) {
+			originalParent.cut(step);
 		}
 	}
 
 	private Node base = null;
-	private String name;
+	private final String name;
 
-	public Reference(String name) {
+	public Reference(final String name) {
 		super();
 		this.name = name;
 	}
 
-	private Node get(ParseContext context) {
+	private Node get(final ParseContext context) {
 		if (base == null) {
 			base = context.grammar.getNode(name);
 			drop = drop || base.drop;
@@ -69,19 +66,27 @@ public class Reference extends Node {
 	}
 
 	@Override
-	public void context(ParseContext context, Store store, Parent parent, Map<String, RefParent> seen) {
+	public void context(
+			final ParseContext context,
+			final Store store,
+			final Parent parent,
+			final Map<String, RefParent> seen,
+			final Object cause
+	) {
 		if (seen.containsKey(name)) {
 			seen.get(name).loopParents.add(parent);
 			return;
 		}
-		RefParent subParent = new RefParent(parent);
+		final RefParent subParent = new RefParent(parent);
 		seen.put(name, subParent);
 		get(context).context(
-			context,
-			store.push(), 
-			subParent, seen);
+				context,
+				store.push(),
+				subParent, seen,
+				cause
+		);
 	}
-	
+
 	public String toString() {
 		if (drop) return "#" + name;
 		return name;
