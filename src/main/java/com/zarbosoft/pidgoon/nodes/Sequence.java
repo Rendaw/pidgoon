@@ -6,10 +6,10 @@ import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.source.Store;
+import org.pcollections.PMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Sequence extends Node {
@@ -25,7 +25,7 @@ public class Sequence extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final Map<String, RefParent> seen,
+			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
 		class SeqParent extends BaseParent {
@@ -41,7 +41,8 @@ public class Sequence extends Node {
 				final Store tempStore = store.pop(!drop);
 				final int nextStep = this.step + 1;
 				if (nextStep >= children.size()) {
-					if (cut) parent.cut(step);
+					if (cut)
+						parent.cut(step);
 					parent.advance(step, tempStore, cause);
 				} else {
 					children.get(nextStep).context(step, tempStore.push(), new SeqParent(parent, nextStep), cause);
@@ -57,13 +58,13 @@ public class Sequence extends Node {
 	}
 
 	public String toString() {
-		final String out = children.stream()
-				.map(c -> {
-					if (!c.drop && (c instanceof Union)) return String.format("(%s)", c);
-					return c.toString();
-				})
-				.collect(Collectors.joining(" "));
-		if (drop) return String.format("#(%s)", out);
+		final String out = children.stream().map(c -> {
+			if (!c.drop && (c instanceof Union))
+				return String.format("(%s)", c);
+			return c.toString();
+		}).collect(Collectors.joining(" "));
+		if (drop)
+			return String.format("#(%s)", out);
 		return out;
 	}
 }

@@ -1,11 +1,11 @@
 package com.zarbosoft.pidgoon.internal;
 
+import com.zarbosoft.pidgoon.Grammar;
+import com.zarbosoft.pidgoon.bytes.Callback;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import com.zarbosoft.pidgoon.Grammar;
-import com.zarbosoft.pidgoon.bytes.Callback;
 
 public abstract class BaseParse<P extends BaseParse<P>> {
 
@@ -13,46 +13,73 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 	protected String node;
 	protected Supplier<Object> initialStack;
 	protected Map<String, Object> callbacks;
-	
+	protected int errorHistoryLimit;
+	protected int uncertaintyLimit;
+
 	public BaseParse() {
 		super();
+		errorHistoryLimit = 1;
+		uncertaintyLimit = 1000;
 	}
 
-	public BaseParse(BaseParse<P> other) {
+	public BaseParse(final BaseParse<P> other) {
 		grammar = other.grammar;
 		node = other.node;
 		initialStack = other.initialStack;
 		callbacks = other.callbacks;
+		errorHistoryLimit = other.errorHistoryLimit;
+		uncertaintyLimit = other.uncertaintyLimit;
 	}
 
-	public P grammar(Grammar grammar) {
-		if (this.grammar != null) throw new IllegalArgumentException("Grammar already specified");
-		P out = split();
+	public P grammar(final Grammar grammar) {
+		if (this.grammar != null)
+			throw new IllegalArgumentException("Grammar already specified");
+		final P out = split();
 		out.grammar = grammar;
 		return out;
 	}
 
-	public P node(String node) {
-		if (this.node != null) throw new IllegalArgumentException("Node already specified");
-		P out = split();
+	public P node(final String node) {
+		if (this.node != null)
+			throw new IllegalArgumentException("Node already specified");
+		final P out = split();
 		out.node = node;
 		return out;
 	}
 
-	public P stack(Supplier<Object> supplier) {
-		if (this.initialStack != null) throw new IllegalArgumentException("Initial stack supplier already specified");
-		P out = split();
+	public P stack(final Supplier<Object> supplier) {
+		if (this.initialStack != null)
+			throw new IllegalArgumentException("Initial stack supplier already specified");
+		final P out = split();
 		out.initialStack = supplier;
 		return out;
 	}
 
-	public P callbacks(Map<String, Callback> callbacks) {
-		if (this.callbacks != null) throw new IllegalArgumentException("Callbacks already specified");
-		if (callbacks == null) return (P)this;
-		P out = split();
-		Map<String, Object> newCallbacks = new HashMap<>();
+	public P callbacks(final Map<String, Callback> callbacks) {
+		if (this.callbacks != null)
+			throw new IllegalArgumentException("Callbacks already specified");
+		if (callbacks == null)
+			return (P) this;
+		final P out = split();
+		final Map<String, Object> newCallbacks = new HashMap<>();
 		callbacks.forEach((k, v) -> newCallbacks.put(k, v));
 		out.callbacks = newCallbacks;
+		return out;
+	}
+
+	public P errorHistory(final int limit) {
+		if (this.errorHistoryLimit != 1)
+			throw new IllegalArgumentException("Error history limit already specified");
+		final P out = split();
+		out.errorHistoryLimit = limit;
+		return out;
+	}
+
+	public P uncertainty(final int limit) {
+		if (this.uncertaintyLimit != 1000)
+			throw new IllegalArgumentException("Uncertainty limit already specified");
+		final P out = split();
+		out.uncertaintyLimit = limit;
 		return out;
 	}
 

@@ -4,7 +4,6 @@ import com.zarbosoft.pidgoon.Grammar;
 import com.zarbosoft.pidgoon.internal.ParseContext;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class EventStream<O> {
 
@@ -16,10 +15,12 @@ public class EventStream<O> {
 			final Grammar grammar,
 			final String node,
 			final Map<String, Object> callbacks,
-			final Store store
+			final Store store,
+			final int errorHistoryLimit,
+			final int uncertaintyLimit
 	) {
 		this.grammar = grammar;
-		this.context = grammar.prepare(node, callbacks, store);
+		this.context = grammar.prepare(node, callbacks, store, errorHistoryLimit, uncertaintyLimit);
 	}
 
 	public EventStream(final ParseContext step, final Grammar grammar) {
@@ -30,13 +31,13 @@ public class EventStream<O> {
 	public EventStream push(final Event e, final String s) {
 		position.event = e;
 		position.at = s;
+		/*
 		System.out.println(String.format(
 				"%s\n%s\n\n",
 				position,
-				context.outLeaves.stream()
-						.map(l -> l.toString())
-						.collect(Collectors.joining("\n"))
+				context.leaves.stream().map(l -> l.toString()).collect(Collectors.joining("\n"))
 		));
+		*/
 		final ParseContext nextStep = grammar.step(context, position);
 		return new EventStream<O>(nextStep, grammar);
 	}

@@ -4,10 +4,10 @@ import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.source.Store;
+import org.pcollections.PMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Reference extends Node {
 
@@ -20,7 +20,8 @@ public class Reference extends Node {
 		}
 
 		public void advance(final ParseContext step, final Store store, final Object cause) {
-			if (cut) originalParent.cut(step);
+			if (cut)
+				originalParent.cut(step);
 			final Store tempStore = store.pop(!drop);
 			originalParent.advance(step, tempStore, cause);
 			for (final Parent p : loopParents) {
@@ -39,7 +40,8 @@ public class Reference extends Node {
 
 		@Override
 		public long size(final Parent stopAt, final long start) {
-			if (stopAt == this) return start;
+			if (stopAt == this)
+				return start;
 			return originalParent.size(stopAt, start + 1);
 		}
 
@@ -70,7 +72,7 @@ public class Reference extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final Map<String, RefParent> seen,
+			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
 		if (seen.containsKey(name)) {
@@ -78,17 +80,12 @@ public class Reference extends Node {
 			return;
 		}
 		final RefParent subParent = new RefParent(parent);
-		seen.put(name, subParent);
-		get(context).context(
-				context,
-				store.push(),
-				subParent, seen,
-				cause
-		);
+		get(context).context(context, store.push(), subParent, seen.plus(name, subParent), cause);
 	}
 
 	public String toString() {
-		if (drop) return "#" + name;
+		if (drop)
+			return "#" + name;
 		return name;
 	}
 }

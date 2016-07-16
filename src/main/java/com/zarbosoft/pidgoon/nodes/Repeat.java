@@ -6,8 +6,7 @@ import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.source.Store;
-
-import java.util.Map;
+import org.pcollections.PMap;
 
 public class Repeat extends Node {
 	private final Node root;
@@ -34,7 +33,7 @@ public class Repeat extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final Map<String, RefParent> seen,
+			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
 		class RepParent extends BaseParent {
@@ -46,7 +45,8 @@ public class Repeat extends Node {
 			}
 
 			public void advance(final ParseContext step, final Store store, final Object cause) {
-				if (cut) parent.cut(step);
+				if (cut)
+					parent.cut(step);
 				final Store tempStore = store.pop(!drop);
 				final long nextCount = count + 1;
 				if ((max != null) && (nextCount == max)) {
@@ -77,20 +77,23 @@ public class Repeat extends Node {
 
 	public String toString() {
 		String out;
-		if ((min == 0) && (max == null)) out = "*";
-		else if ((min == 1) && (max == null)) out = "+";
-		else if ((min == 0) && (max == 1)) out = "?";
-		else out = String.format("{%d, %d}", min, max);
+		if ((min == 0) && (max == null))
+			out = "*";
+		else if ((min == 1) && (max == null))
+			out = "+";
+		else if ((min == 0) && (max == 1))
+			out = "?";
+		else
+			out = String.format("{%d, %d}", min, max);
 		if (!root.drop && (
-				(root instanceof Sequence) ||
-						(root instanceof Union)
-		)
-				) {
+				(root instanceof Sequence) || (root instanceof Union)
+		)) {
 			out = String.format("(%s)%s", root, out);
 		} else {
 			out = String.format("%s%s", root, out);
 		}
-		if (drop) return String.format("#(%s)", out);
+		if (drop)
+			return String.format("#(%s)", out);
 		return out;
 	}
 }

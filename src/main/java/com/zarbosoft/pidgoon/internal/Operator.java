@@ -6,6 +6,7 @@ import com.zarbosoft.pidgoon.nodes.Repeat;
 import com.zarbosoft.pidgoon.nodes.Sequence;
 import com.zarbosoft.pidgoon.nodes.Union;
 import com.zarbosoft.pidgoon.source.Store;
+import org.pcollections.PMap;
 
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public abstract class Operator extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final Map<String, RefParent> seen,
+			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
 		root.context(context, store.push(), new BaseParent(parent) {
@@ -32,7 +33,8 @@ public abstract class Operator extends Node {
 			@Override
 			public void advance(final ParseContext step, final Store store, final Object cause) {
 				Store tempStore = store;
-				if (cut) parent.cut(step);
+				if (cut)
+					parent.cut(step);
 				try {
 					tempStore = callback(store, context.callbacks);
 				} catch (final AbortParse a) {
@@ -52,10 +54,9 @@ public abstract class Operator extends Node {
 	public String toString() {
 		String out = root.toString();
 		if (drop && !root.drop) {
-			if (
-					(root instanceof Sequence) ||
-							(root instanceof Union) ||
-							(root instanceof Repeat)) {
+			if ((root instanceof Sequence) ||
+					(root instanceof Union) ||
+					(root instanceof Repeat)) {
 				out = String.format("#(%s)", out);
 			} else {
 				out = String.format("#%s", out);

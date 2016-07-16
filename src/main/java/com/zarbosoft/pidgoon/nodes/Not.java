@@ -6,8 +6,7 @@ import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.source.Store;
-
-import java.util.Map;
+import org.pcollections.PMap;
 
 public class Not extends Node {
 	private final Node root;
@@ -21,13 +20,14 @@ public class Not extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final Map<String, RefParent> seen,
+			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
 		root.context(context, store.push(), new BaseParent(parent) {
 			@Override
 			public void error(final ParseContext step, final Store store, final Object cause) {
-				if (cut) parent.cut(step);
+				if (cut)
+					parent.cut(step);
 				parent.advance(step, store.pop(!drop), cause);
 			}
 
@@ -50,13 +50,13 @@ public class Not extends Node {
 				(root instanceof Sequence) ||
 						(root instanceof Union) ||
 						(root instanceof Repeat)
-		)
-				) {
+		)) {
 			out = String.format("~(%s)", root);
 		} else {
 			out = String.format("~%s", root);
 		}
-		if (drop) return "#" + out;
+		if (drop)
+			return "#" + out;
 		return out;
 	}
 }

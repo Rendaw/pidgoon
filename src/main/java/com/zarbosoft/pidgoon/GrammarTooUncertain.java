@@ -4,12 +4,12 @@ import com.zarbosoft.pidgoon.internal.ParseContext;
 
 import java.util.stream.Collectors;
 
-public class GrammarTooAmbiguous extends RuntimeException {
+public class GrammarTooUncertain extends RuntimeException {
 	private static final long serialVersionUID = -1049832348704101941L;
 	private final Object position;
 	private final ParseContext context;
 
-	public GrammarTooAmbiguous(final ParseContext context, final Object position) {
+	public GrammarTooUncertain(final ParseContext context, final Object position) {
 		this.context = context;
 		this.position = position;
 	}
@@ -17,12 +17,10 @@ public class GrammarTooAmbiguous extends RuntimeException {
 	@Override
 	public String toString() {
 		return String.format(
-				"Grammar too ambiguous (%d simultaneous next terminals) at:\n%s\n%s",
-				context.outLeaves.size(),
+				"Grammar too uncertain (%d possible next states) at:\n%s\n%s",
+				context.leaves.size(),
 				position,
-				context.outLeaves.stream()
-						.map(l -> l.toString())
-						.collect(Collectors.joining("\n"))
+				context.leaves.stream().map(l -> l.toString()).collect(Collectors.joining("\n"))
 		);
 	}
 }

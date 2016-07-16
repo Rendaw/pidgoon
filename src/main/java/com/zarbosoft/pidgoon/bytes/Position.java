@@ -1,34 +1,34 @@
 package com.zarbosoft.pidgoon.bytes;
 
+import com.google.common.base.Strings;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
-import com.google.common.base.Strings;
-
 public class Position implements com.zarbosoft.pidgoon.source.Position {
 	InputStream stream;
-	
+
 	private int bufUsed = 0;
 	byte buf[];
 	int localOffset = 0;
-	
+
 	long absolute = 0;
 	private long line = 0;
 	private long column = 0;
 
-	public Position(InputStream stream) {
+	public Position(final InputStream stream) {
 		this.stream = stream;
 		buf = new byte[10 * 1024];
 		try {
 			bufUsed = stream.read(buf, 0, buf.length);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
 		}
 	}
 
-	private Position(Position last) {
+	private Position(final Position last) {
 		stream = last.stream;
 		if (last.localOffset + 1 < last.bufUsed) {
 			bufUsed = last.bufUsed;
@@ -38,7 +38,7 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 			buf = new byte[10 * 1024];
 			try {
 				bufUsed = stream.read(buf, 0, buf.length);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new UncheckedIOException(e);
 			}
 			localOffset = 0;
@@ -48,12 +48,11 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 			line = last.line;
 			column = last.column + 1;
 		} else {
-			byte b = buf[localOffset];
+			final byte b = buf[localOffset];
 			if (b == (byte) '\n') {
 				line = last.line + 1;
 				column = 0;
-			} 
-			else {
+			} else {
 				line = last.line;
 				column = last.column + 1;
 			}
@@ -62,13 +61,18 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 
 	@Override
 	public String toString() {
-		int windowStart = Math.max(Math.min(localOffset - 30, bufUsed - 60), 0);
-		int windowStop = Math.max(Math.min(bufUsed, windowStart + 60), 0);
-		String prefix = String.format("line %d, col %d: [", line, column);
-		return String.format(
-			"%s%s]\n%s%s", 
-			prefix, new String(buf, StandardCharsets.US_ASCII).substring(windowStart, windowStop).replace("\n", "."),
-			Strings.repeat(" ", prefix.length() + localOffset - windowStart), "^");
+		final int windowStart = Math.max(Math.min(localOffset - 30, bufUsed - 60), 0);
+		final int windowStop = Math.max(Math.min(bufUsed, windowStart + 60), 0);
+		final String prefix = String.format("line %d, col %d: [", line, column);
+		String window = new String(buf, StandardCharsets.US_ASCII).substring(windowStart, windowStop);
+		window = window.replace("\n", ".");
+		window = window.replace("\t", " ");
+		return String.format("%s%s]\n%s%s",
+				prefix,
+				window,
+				Strings.repeat(" ", prefix.length() + localOffset - windowStart),
+				"^"
+		);
 	}
 
 	@Override

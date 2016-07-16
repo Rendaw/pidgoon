@@ -14,7 +14,7 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 		Store store = new Store();
 		if (initialStack != null)
 			store = (Store) store.pushStack(initialStack.get());
-		return new EventStream<>(grammar, node, callbacks, store);
+		return new EventStream<>(grammar, node, callbacks, store, errorHistoryLimit, uncertaintyLimit);
 	}
 
 	@Override

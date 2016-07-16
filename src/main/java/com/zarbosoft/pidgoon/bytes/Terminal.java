@@ -8,10 +8,10 @@ import com.zarbosoft.pidgoon.InvalidGrammar;
 import com.zarbosoft.pidgoon.internal.*;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.source.Store;
+import org.pcollections.PMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Terminal extends Node {
@@ -30,7 +30,8 @@ public class Terminal extends Node {
 
 	@SafeVarargs
 	public Terminal(final Byte... units) {
-		if (units.length == 0) throw new InvalidGrammar("Empty terminal specification!");
+		if (units.length == 0)
+			throw new InvalidGrammar("Empty terminal specification!");
 		final ImmutableRangeSet.Builder<Byte> builder = ImmutableRangeSet.builder();
 		for (final Byte unit : units) {
 			builder.add(Range.closedOpen(unit, (byte) (unit + 1)));
@@ -63,16 +64,15 @@ public class Terminal extends Node {
 			if (r.upperEndpoint() == r.lowerEndpoint() + 1) {
 				single.add(Helper.byteFormat(r.lowerEndpoint()));
 			} else {
-				range.add(String.format(
-						"%s-%s",
+				range.add(String.format("%s-%s",
 						Helper.byteFormat(r.lowerEndpoint()),
 						Helper.byteFormat((byte) (r.upperEndpoint() - 1))
 				));
 			}
 		});
-		if (range.isEmpty() && (single.size() == 1)) return String.format("'%s'", single.get(0));
-		return String.format(
-				"[%s%s]",
+		if (range.isEmpty() && (single.size() == 1))
+			return String.format("'%s'", single.get(0));
+		return String.format("[%s%s]",
 				single.stream().collect(Collectors.joining()),
 				range.stream().collect(Collectors.joining())
 		);
@@ -83,11 +83,11 @@ public class Terminal extends Node {
 			final ParseContext context,
 			final Store prestore,
 			final Parent parent,
-			final Map<String, RefParent> seen,
+			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
 		final Node outer = this;
-		context.outLeaves.add(new State() {
+		context.leaves.add(new State() {
 			@Override
 			public String toString() {
 				return parent.buildPath(outer.toString());
@@ -97,9 +97,11 @@ public class Terminal extends Node {
 			public void parse(final ParseContext step, final com.zarbosoft.pidgoon.source.Position sourcePosition) {
 				Store store = prestore;
 				final Position position = (Position) sourcePosition;
-				if (!drop) store = store.record(position);
+				if (!drop)
+					store = store.record(position);
 				if (value.contains(position.get())) {
-					if (cut) parent.cut(step);
+					if (cut)
+						parent.cut(step);
 					parent.advance(step, store, this);
 				} else {
 					parent.error(step, store, this);

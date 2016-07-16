@@ -6,8 +6,7 @@ import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.internal.State;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.source.Store;
-
-import java.util.Map;
+import org.pcollections.PMap;
 
 public class Terminal extends Node {
 	private final Event value;
@@ -25,11 +24,11 @@ public class Terminal extends Node {
 			final ParseContext context,
 			final Store prestore,
 			final Parent parent,
-			final Map<String, RefParent> seen,
+			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
 		final Node outer = this;
-		context.outLeaves.add(new State() {
+		context.leaves.add(new State() {
 			@Override
 			public String toString() {
 				return parent.buildPath(outer.toString());
@@ -39,9 +38,11 @@ public class Terminal extends Node {
 			public void parse(final ParseContext step, final com.zarbosoft.pidgoon.source.Position sourcePosition) {
 				Store store = (Store) prestore;
 				final Position position = (Position) sourcePosition;
-				if (!drop) store = store.record(position);
+				if (!drop)
+					store = store.record(position);
 				if (value.matches(position.get())) {
-					if (cut) parent.cut(step);
+					if (cut)
+						parent.cut(step);
 					parent.advance(step, store, this);
 				} else {
 					parent.error(step, store, this);
