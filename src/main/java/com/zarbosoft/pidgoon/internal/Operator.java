@@ -13,6 +13,11 @@ import java.util.Map;
 public abstract class Operator extends Node {
 	private final Node root;
 
+	public Operator() {
+		super();
+		root = null;
+	}
+
 	public Operator(final Node root) {
 		super();
 		this.root = root;
@@ -28,35 +33,37 @@ public abstract class Operator extends Node {
 			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
-		root.context(context, store.push(), new BaseParent(parent) {
+		if (root == null) {
+			parent.advance(context, callback(store, context.callbacks).pop(!drop), cause);
+		} else {
+			root.context(context, store.push(), new BaseParent(parent) {
 
-			@Override
-			public void advance(final ParseContext step, final Store store, final Object cause) {
-				Store tempStore = store;
-				if (cut)
-					parent.cut(step);
-				try {
-					tempStore = callback(store, context.callbacks);
-				} catch (final AbortParse a) {
-					parent.error(step, tempStore, a);
-					return;
+				@Override
+				public void advance(final ParseContext step, final Store store, final Object cause) {
+					Store tempStore = store;
+					if (cut)
+						parent.cut(step);
+					try {
+						tempStore = callback(store, context.callbacks);
+					} catch (final AbortParse a) {
+						parent.error(step, tempStore, a);
+						return;
+					}
+					parent.advance(step, tempStore.pop(!drop), cause);
 				}
-				parent.advance(step, tempStore.pop(!drop), cause);
-			}
 
-			@Override
-			public String buildPath(final String subpath) {
-				return parent.buildPath(String.format("op . %s", subpath));
-			}
-		}, seen, cause);
+				@Override
+				public String buildPath(final String subpath) {
+					return parent.buildPath(String.format("op . %s", subpath));
+				}
+			}, seen, cause);
+		}
 	}
 
 	public String toString() {
 		String out = root.toString();
 		if (drop && !root.drop) {
-			if ((root instanceof Sequence) ||
-					(root instanceof Union) ||
-					(root instanceof Repeat)) {
+			if ((root instanceof Sequence) || (root instanceof Union) || (root instanceof Repeat)) {
 				out = String.format("#(%s)", out);
 			} else {
 				out = String.format("#%s", out);

@@ -8,9 +8,9 @@ import com.zarbosoft.pidgoon.internal.Pair;
 import com.zarbosoft.pidgoon.nodes.*;
 
 public class GrammarFile {
-	private final static Grammar grammar;
+	private static Grammar grammar;
 
-	static {
+	private static void buildGrammar() {
 		grammar = new Grammar();
 		grammar.add("root", new Repeat(new Sequence().add(new Reference("interstitial")).add(new Reference("rule"))));
 		grammar.add(
@@ -161,6 +161,8 @@ public class GrammarFile {
 	}
 
 	public static Parse<Grammar> parse() {
+		if (grammar == null)
+			buildGrammar();
 		return new Parse<Grammar>()
 				.grammar(grammar)
 				.node("root")

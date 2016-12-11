@@ -28,33 +28,37 @@ public class Sequence extends Node {
 			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
-		class SeqParent extends BaseParent {
-			final int step;
+		if (children.isEmpty()) {
+			parent.advance(context, store, cause);
+		} else {
+			class SeqParent extends BaseParent {
+				final int step;
 
-			public SeqParent(final Parent parent, final int step) {
-				super(parent);
-				this.step = step;
-			}
+				public SeqParent(final Parent parent, final int step) {
+					super(parent);
+					this.step = step;
+				}
 
-			@Override
-			public void advance(final ParseContext step, final Store store, final Object cause) {
-				final Store tempStore = store.pop(!drop);
-				final int nextStep = this.step + 1;
-				if (nextStep >= children.size()) {
-					if (cut)
-						parent.cut(step);
-					parent.advance(step, tempStore, cause);
-				} else {
-					children.get(nextStep).context(step, tempStore.push(), new SeqParent(parent, nextStep), cause);
+				@Override
+				public void advance(final ParseContext step, final Store store, final Object cause) {
+					final Store tempStore = store.pop(!drop);
+					final int nextStep = this.step + 1;
+					if (nextStep >= children.size()) {
+						if (cut)
+							parent.cut(step);
+						parent.advance(step, tempStore, cause);
+					} else {
+						children.get(nextStep).context(step, tempStore.push(), new SeqParent(parent, nextStep), cause);
+					}
+				}
+
+				@Override
+				public String buildPath(final String subpath) {
+					return parent.buildPath(String.format("seq[%d/%d] . %s", step + 1, children.size(), subpath));
 				}
 			}
-
-			@Override
-			public String buildPath(final String subpath) {
-				return parent.buildPath(String.format("seq[%d/%d] . %s", step + 1, children.size(), subpath));
-			}
+			children.get(0).context(context, store.push(), new SeqParent(parent, 0), seen, cause);
 		}
-		children.get(0).context(context, store.push(), new SeqParent(parent, 0), seen, cause);
 	}
 
 	public String toString() {

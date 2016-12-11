@@ -15,6 +15,11 @@ public class BakedOperator extends Operator {
 		this.callback = callback;
 	}
 
+	public BakedOperator(final Callback callback) {
+		super();
+		this.callback = callback;
+	}
+
 	@Override
 	protected Store callback(final Store store, final Map<String, Object> callbacks) {
 		return callback.accept(store);

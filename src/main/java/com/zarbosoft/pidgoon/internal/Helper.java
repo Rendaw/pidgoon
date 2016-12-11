@@ -4,11 +4,11 @@ import com.google.common.base.Strings;
 import com.google.common.primitives.UnsignedBytes;
 import com.zarbosoft.pidgoon.source.Store;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class Helper {
 
@@ -111,6 +111,19 @@ public class Helper {
 
 	public static <T> T last(final List<T> values) {
 		return values.get(values.size() - 1);
+	}
+
+	public static <T> Stream<T> stream(final Iterator<T> iterator) {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
+	}
+
+	public static <T> Stream<Pair<Integer, T>> enumerate(final Stream<T> stream) {
+		return enumerate(stream, 0);
+	}
+
+	public static <T> Stream<Pair<Integer, T>> enumerate(final Stream<T> stream, final int start) {
+		final Mutable<Integer> count = new Mutable<>(start);
+		return stream.map(e -> new Pair<>(count.value++, e));
 	}
 
 	@FunctionalInterface

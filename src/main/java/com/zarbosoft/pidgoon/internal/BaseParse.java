@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public abstract class BaseParse<P extends BaseParse<P>> {
 
 	protected Grammar grammar;
-	protected String node;
+	protected String node = "root";
 	protected Supplier<Object> initialStack;
 	protected Map<String, Object> callbacks;
 	protected int errorHistoryLimit;
@@ -40,7 +40,7 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 	}
 
 	public P node(final String node) {
-		if (this.node != null)
+		if (!this.node.equals("root"))
 			throw new IllegalArgumentException("Node already specified");
 		final P out = split();
 		out.node = node;

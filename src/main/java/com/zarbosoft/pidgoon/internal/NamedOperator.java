@@ -4,9 +4,13 @@ public abstract class NamedOperator extends Operator {
 
 	public final String name;
 
-	public NamedOperator(String name, Node root) {
+	public NamedOperator(final String name, final Node root) {
 		super(root);
 		this.name = name;
 	}
 
+	public NamedOperator(final String name) {
+		super();
+		this.name = name;
+	}
 }

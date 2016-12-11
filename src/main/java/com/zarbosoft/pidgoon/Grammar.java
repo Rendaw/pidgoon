@@ -118,12 +118,14 @@ public class Grammar {
 		if (position.isEOF())
 			return null;
 		while (!position.isEOF()) {
+			/*
 			System.out.println(String.format(
 					"%d\n%s\n%s\n",
 					context.hashCode(),
 					position,
 					context.leaves.stream().map(l -> l.toString()).collect(Collectors.joining("\n"))
 			));
+			*/
 			context = step(context, position);
 			position = position.advance();
 		}

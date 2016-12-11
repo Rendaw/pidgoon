@@ -11,10 +11,15 @@ public class NamedOperator extends com.zarbosoft.pidgoon.internal.NamedOperator 
 		super(name, root);
 	}
 
+	public NamedOperator(final String name) {
+		super(name);
+	}
+
 	@Override
 	protected com.zarbosoft.pidgoon.source.Store callback(final Store store, final Map<String, Object> callbacks) {
 		final Object found = callbacks.get(name);
-		if (found == null) return store;
+		if (found == null)
+			return store;
 		return ((Callback) found).accept(store);
 	}
 }

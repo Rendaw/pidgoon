@@ -12,10 +12,15 @@ public class Operator extends NamedOperator {
 		super(name, root);
 	}
 
+	public Operator(final String name) {
+		super(name);
+	}
+
 	@Override
 	protected Store callback(final Store store, final Map<String, Object> callbacks) {
 		final Object found = callbacks.get(name);
-		if (found == null) return store;
+		if (found == null)
+			return store;
 		return ((Callback) found).accept(store);
 	}
 
