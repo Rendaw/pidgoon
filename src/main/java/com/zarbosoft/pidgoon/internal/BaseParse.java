@@ -15,6 +15,7 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 	protected Map<String, Object> callbacks;
 	protected int errorHistoryLimit;
 	protected int uncertaintyLimit;
+	protected boolean dumpAmbiguity;
 
 	public BaseParse() {
 		super();
@@ -29,6 +30,7 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 		callbacks = other.callbacks;
 		errorHistoryLimit = other.errorHistoryLimit;
 		uncertaintyLimit = other.uncertaintyLimit;
+		dumpAmbiguity = other.dumpAmbiguity;
 	}
 
 	public P grammar(final Grammar grammar) {
@@ -84,4 +86,12 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 	}
 
 	abstract protected P split();
+
+	public P dumpAmbiguity(final boolean dumpAmbiguity) {
+		if (this.dumpAmbiguity)
+			throw new IllegalArgumentException("Dump ambiguity already specified");
+		final P out = split();
+		out.dumpAmbiguity = dumpAmbiguity;
+		return out;
+	}
 }

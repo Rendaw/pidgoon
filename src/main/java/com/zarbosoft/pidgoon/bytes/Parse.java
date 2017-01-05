@@ -25,7 +25,14 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 		ClipStore store = new ClipStore();
 		if (initialStack != null)
 			store = (ClipStore) store.pushStack(initialStack.get());
-		return (O) grammar.parse(node, new Position(stream), callbacks, store, errorHistoryLimit, uncertaintyLimit);
+		return (O) grammar.parse(node,
+				new Position(stream),
+				callbacks,
+				store,
+				errorHistoryLimit,
+				uncertaintyLimit,
+				dumpAmbiguity
+		);
 	}
 
 	public static Sequence byteSeq(final List<Byte> list) {

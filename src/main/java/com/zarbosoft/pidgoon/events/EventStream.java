@@ -17,10 +17,11 @@ public class EventStream<O> {
 			final Map<String, Object> callbacks,
 			final Store store,
 			final int errorHistoryLimit,
-			final int uncertaintyLimit
+			final int uncertaintyLimit,
+			final boolean dumpAmbiguity
 	) {
 		this.grammar = grammar;
-		this.context = grammar.prepare(node, callbacks, store, errorHistoryLimit, uncertaintyLimit);
+		this.context = grammar.prepare(node, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
 	}
 
 	public EventStream(final ParseContext step, final Grammar grammar) {

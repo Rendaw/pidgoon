@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 public class GrammarTooUncertain extends RuntimeException {
 	private static final long serialVersionUID = -1049832348704101941L;
-	private final Object position;
-	private final ParseContext context;
+	public final Object position;
+	public final ParseContext context;
 
 	public GrammarTooUncertain(final ParseContext context, final Object position) {
 		this.context = context;
