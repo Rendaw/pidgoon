@@ -36,6 +36,8 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 	public P grammar(final Grammar grammar) {
 		if (this.grammar != null)
 			throw new IllegalArgumentException("Grammar already specified");
+		if (grammar == null)
+			throw new IllegalArgumentException("Argument is null.");
 		final P out = split();
 		out.grammar = grammar;
 		return out;

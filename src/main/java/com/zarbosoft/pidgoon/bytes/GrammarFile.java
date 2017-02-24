@@ -4,15 +4,20 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
 import com.zarbosoft.pidgoon.internal.Helper;
 import com.zarbosoft.pidgoon.internal.Node;
-import com.zarbosoft.pidgoon.internal.Pair;
 import com.zarbosoft.pidgoon.nodes.*;
+import com.zarbosoft.rendaw.common.Pair;
 
 public class GrammarFile {
 	private static Grammar grammar;
 
 	private static void buildGrammar() {
 		grammar = new Grammar();
-		grammar.add("root", new Repeat(new Sequence().add(new Reference("interstitial")).add(new Reference("rule"))));
+		grammar.add(
+				"root",
+				new Sequence()
+						.add(new Reference("interstitial"))
+						.add(new Repeat(new Sequence().add(new Reference("rule")).add(new Reference("interstitial"))))
+		);
 		grammar.add(
 				"rule",
 				new Sequence()

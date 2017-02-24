@@ -3,12 +3,11 @@ package com.zarbosoft.pidgoon.internal;
 import com.google.common.base.Strings;
 import com.google.common.primitives.UnsignedBytes;
 import com.zarbosoft.pidgoon.source.Store;
+import com.zarbosoft.rendaw.common.Pair;
 
-import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class Helper {
 
@@ -26,10 +25,6 @@ public class Helper {
 
 	public static String byteFormat(final List<Byte> bytes) {
 		return bytes.stream().map(b -> byteFormat(b)).collect(Collectors.joining());
-	}
-
-	public static <T> Stream<T> stream(final T[] values) {
-		return Arrays.asList(values).stream();
 	}
 
 	public static Store stackSingleElement(Store store) {
@@ -56,26 +51,6 @@ public class Helper {
 		final int length = store.stackTop();
 		store = store.popStack();
 		return store.pushStack(new Pair<>(name, value)).pushStack(length + 1);
-	}
-
-	public static <T> T uncheck(final Thrower1<T> code) {
-		try {
-			return code.get();
-		} catch (final RuntimeException e) {
-			throw e;
-		} catch (final Throwable e) {
-			throw new UncheckedException(e);
-		}
-	}
-
-	public static void uncheck(final Thrower2 code) {
-		try {
-			code.get();
-		} catch (final RuntimeException e) {
-			throw e;
-		} catch (final Throwable e) {
-			throw new UncheckedException(e);
-		}
 	}
 
 	public static <L, R> Store stackPopDoubleList(Store s, final Pair.Consumer<L, R> callback) {
@@ -107,40 +82,5 @@ public class Helper {
 			s = s.popStack();
 		}
 		return s;
-	}
-
-	public static <T> T last(final List<T> values) {
-		return values.get(values.size() - 1);
-	}
-
-	public static <T> Stream<T> stream(final Iterator<T> iterator) {
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
-	}
-
-	public static <T> Stream<Pair<Integer, T>> enumerate(final Stream<T> stream) {
-		return enumerate(stream, 0);
-	}
-
-	public static <T> Stream<Pair<Integer, T>> enumerate(final Stream<T> stream, final int start) {
-		final Mutable<Integer> count = new Mutable<>(start);
-		return stream.map(e -> new Pair<>(count.value++, e));
-	}
-
-	@FunctionalInterface
-	public interface Thrower1<T> {
-		T get() throws Throwable;
-	}
-
-	@FunctionalInterface
-	public interface Thrower2 {
-		void get() throws Throwable;
-	}
-
-	public static class UncheckedException extends RuntimeException {
-		private static final long serialVersionUID = 9029838186087025315L;
-
-		public UncheckedException(final Throwable e) {
-			super(e);
-		}
 	}
 }

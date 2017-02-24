@@ -1,13 +1,14 @@
 package com.zarbosoft.pidgoon.events;
 
 import com.zarbosoft.pidgoon.Grammar;
+import com.zarbosoft.pidgoon.InvalidStream;
 import com.zarbosoft.pidgoon.internal.ParseContext;
 
 import java.util.Map;
 
 public class EventStream<O> {
 
-	private final Position position = new Position();
+	private long lastDistance = 0;
 	private final ParseContext context;
 	private final Grammar grammar;
 
@@ -30,21 +31,15 @@ public class EventStream<O> {
 	}
 
 	public EventStream push(final Event e, final String s) {
-		position.event = e;
-		position.at = s;
-		/*
-		System.out.println(String.format(
-				"%s\n%s\n\n",
-				position,
-				context.leaves.stream().map(l -> l.toString()).collect(Collectors.joining("\n"))
-		));
-		*/
-		final ParseContext nextStep = grammar.step(context, position);
+		final ParseContext nextStep = grammar.step(context, new Position(e, s, lastDistance++));
 		return new EventStream<O>(nextStep, grammar);
 	}
 
 	public O finish() {
-		return (O) grammar.finish(context);
+		return (O) context.results
+				.stream()
+				.findFirst()
+				.orElseThrow(() -> new InvalidStream(context, "Incomplete stream."));
 	}
 
 }

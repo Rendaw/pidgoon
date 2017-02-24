@@ -7,4 +7,6 @@ public interface Position {
 	Position advance();
 
 	boolean isEOF();
+
+	long distance();
 }

@@ -88,6 +88,11 @@ public class Position implements com.zarbosoft.pidgoon.source.Position {
 		return bufUsed == -1;
 	}
 
+	@Override
+	public long distance() {
+		return absolute;
+	}
+
 	public Byte get() {
 		return buf[localOffset];
 	}

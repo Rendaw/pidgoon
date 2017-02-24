@@ -3,6 +3,7 @@ package com.zarbosoft.pidgoon.internal;
 import com.zarbosoft.pidgoon.Grammar;
 import com.zarbosoft.pidgoon.Stats;
 import com.zarbosoft.pidgoon.source.Position;
+import com.zarbosoft.rendaw.common.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class ParseContext {
 	public final int uncertaintyLimit;
 	public List<State> leaves = new ArrayList<>();
 	public Stats stats = new Stats();
-	public Object result = null;
+	public List<Object> results = new ArrayList<>();
 
 	public static class AmbiguitySample {
 		public int step;

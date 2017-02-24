@@ -1,6 +1,9 @@
 package com.zarbosoft.pidgoon.nodes;
 
-import com.zarbosoft.pidgoon.internal.*;
+import com.zarbosoft.pidgoon.internal.BaseParent;
+import com.zarbosoft.pidgoon.internal.Node;
+import com.zarbosoft.pidgoon.internal.Parent;
+import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import com.zarbosoft.pidgoon.source.Store;
 import org.pcollections.PMap;
@@ -8,6 +11,8 @@ import org.pcollections.PMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.zarbosoft.rendaw.common.Common.enumerate;
 
 public class Union extends Node {
 	List<Node> children = new ArrayList<>();
@@ -25,7 +30,7 @@ public class Union extends Node {
 			final PMap<String, RefParent> seen,
 			final Object cause
 	) {
-		Pair.enumerate(children).forEach(p -> {
+		enumerate(children.stream()).forEach(p -> {
 			p.second.context(context, store.push(), new BaseParent(parent) {
 				@Override
 				public void advance(final ParseContext step, final Store store, final Object cause) {

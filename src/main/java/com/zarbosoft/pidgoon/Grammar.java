@@ -3,6 +3,7 @@ package com.zarbosoft.pidgoon;
 import com.zarbosoft.pidgoon.internal.*;
 import com.zarbosoft.pidgoon.source.Position;
 import com.zarbosoft.pidgoon.source.Store;
+import com.zarbosoft.rendaw.common.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,8 +49,8 @@ public class Grammar {
 
 			@Override
 			public void advance(final ParseContext step, final Store store, final Object cause) {
-				if (store.hasOneResult() && step.result == null)
-					step.result = store.stackTop();
+				if (store.hasOneResult())
+					step.results.add(store.stackTop());
 			}
 
 			@Override
@@ -110,8 +111,6 @@ public class Grammar {
 			throw new GrammarTooUncertain(nextStep, position);
 		if (nextStep.leaves.isEmpty() && nextStep.errors.size() == currentStep.leaves.size())
 			throw new InvalidStream(nextStep);
-		if (nextStep.result == null)
-			nextStep.result = currentStep.result;
 		/*
 		if (nextStep.ambiguityHistory != null)
 			System.out.println(String.format(
@@ -123,40 +122,5 @@ public class Grammar {
 			));
 		*/
 		return nextStep;
-	}
-
-	public Object finish(final ParseContext context) {
-		return context.result;
-	}
-
-	public Object parse(
-			final String node,
-			final Position initialPosition,
-			final Map<String, Object> callbacks,
-			final Store initialStore,
-			final int errorHistoryLimit,
-			final int uncertaintyLimit,
-			final boolean dumpAmbiguity
-	) {
-		Position position = initialPosition;
-		ParseContext context =
-				prepare(node, callbacks, initialStore, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
-		if (position.isEOF())
-			return null;
-		while (!position.isEOF()) {
-			/*
-			if (context.ambiguityHistory != null)
-				System.out.println(String.format(
-						"\n%d ==============\n%d\n%s\n%s\n",
-						context.ambiguityHistory.top().step,
-						context.hashCode(),
-						position,
-						context.leaves.stream().map(l -> l.toString()).collect(Collectors.joining("\n"))
-				));
-			*/
-			context = step(context, position);
-			position = position.advance();
-		}
-		return finish(context);
 	}
 }
