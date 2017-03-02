@@ -35,11 +35,14 @@ public class EventStream<O> {
 		return new EventStream<O>(nextStep, grammar);
 	}
 
+	public boolean ended() {
+		return context.leaves.isEmpty();
+	}
+
 	public O finish() {
-		return (O) context.results
-				.stream()
-				.findFirst()
-				.orElseThrow(() -> new InvalidStream(context, "Incomplete stream."));
+		if (context.results.isEmpty())
+			throw new InvalidStream(context, "Incomplete stream.");
+		return (O) context.results.get(0);
 	}
 
 }
