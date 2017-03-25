@@ -1,9 +1,9 @@
 package com.zarbosoft.pidgoon.nodes;
 
-import com.zarbosoft.pidgoon.internal.Node;
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
-import com.zarbosoft.pidgoon.source.Store;
+import com.zarbosoft.pidgoon.internal.Store;
 import org.pcollections.PMap;
 
 import java.util.ArrayList;
@@ -20,9 +20,7 @@ public class Reference extends Node {
 		}
 
 		public void advance(final ParseContext step, final Store store, final Object cause) {
-			if (cut)
-				originalParent.cut(step);
-			final Store tempStore = store.pop(!drop);
+			final Store tempStore = store.pop(true);
 			originalParent.advance(step, tempStore, cause);
 			for (final Parent p : loopParents) {
 				p.advance(step, tempStore.inject(p.size(this, 1)), cause);
@@ -62,7 +60,6 @@ public class Reference extends Node {
 	private Node get(final ParseContext context) {
 		if (base == null) {
 			base = context.grammar.getNode(name);
-			drop = drop || base.drop;
 		}
 		return base;
 	}
@@ -84,8 +81,6 @@ public class Reference extends Node {
 	}
 
 	public String toString() {
-		if (drop)
-			return "#" + name;
 		return name;
 	}
 }

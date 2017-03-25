@@ -1,6 +1,6 @@
 package com.zarbosoft.pidgoon.internal;
 
-import com.zarbosoft.pidgoon.source.Store;
+import com.zarbosoft.pidgoon.ParseContext;
 
 public abstract class BaseParent implements Parent {
 

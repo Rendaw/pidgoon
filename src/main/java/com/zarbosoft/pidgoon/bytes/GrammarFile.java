@@ -2,8 +2,9 @@ package com.zarbosoft.pidgoon.bytes;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.internal.Callback;
 import com.zarbosoft.pidgoon.internal.Helper;
-import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.nodes.*;
 import com.zarbosoft.rendaw.common.Pair;
 
@@ -25,7 +26,7 @@ public class GrammarFile {
 						.add(Terminal.fromChar(':'))
 						.add(new Reference("interstitial"))
 						.add(new Reference("expression"))
-						.add(Terminal.fromChar(';').cut())
+						.add(new Cut(Terminal.fromChar(';')))
 		);
 		grammar.add(
 				"identifier",
@@ -79,34 +80,34 @@ public class GrammarFile {
 						.add(new Reference("interstitial1"))
 						.add(new Reference("expression"))
 		);
-		grammar.add("terminal_escape", new Sequence().add(Terminal.fromChar('\\').drop()).add(new Wildcard()));
+		grammar.add("terminal_escape", new Sequence().add(new Drop(Terminal.fromChar('\\'))).add(new Wildcard()));
 		grammar.add("wildcard", new Sequence().add(Terminal.fromChar('.')).add(new Reference("interstitial")));
 		grammar.add(
 				"terminal",
 				new Union()
 						.add(new Sequence()
-								.add(Terminal.fromChar('[').drop())
+								.add(new Drop(Terminal.fromChar('[')))
 								.add(new Repeat(new Union()
 										.add(new Not(Terminal.fromChar('\\', ']')))
 										.add(new Reference("terminal_escape"))).min(1))
-								.add(Terminal.fromChar(']').drop())
+								.add(new Drop(Terminal.fromChar(']')))
 								.add(new Reference("interstitial")))
 						.add(new Sequence()
-								.add(Terminal.fromChar('\'').drop())
+								.add(new Drop(Terminal.fromChar('\'')))
 								.add(new Union()
 										.add(new Not(Terminal.fromChar('\\', '\'')))
 										.add(new Reference("terminal_escape")))
-								.add(Terminal.fromChar('\'').drop())
+								.add(new Drop(Terminal.fromChar('\'')))
 								.add(new Reference("interstitial")))
 		);
 		grammar.add(
 				"string",
 				new Sequence()
-						.add(Terminal.fromChar('"').drop())
+						.add(new Drop(Terminal.fromChar('"')))
 						.add(new Repeat(new Union()
 								.add(new Not(Terminal.fromChar('\\', '"')))
-								.add(new Sequence().add(Terminal.fromChar('\\').drop()).add(new Wildcard()))).min(1))
-						.add(Terminal.fromChar('"').drop())
+								.add(new Sequence().add(new Drop(Terminal.fromChar('\\'))).add(new Wildcard()))).min(1))
+						.add(new Drop(Terminal.fromChar('"')))
 						.add(new Reference("interstitial"))
 		);
 		grammar.add(
@@ -150,18 +151,17 @@ public class GrammarFile {
 		);
 		grammar.add(
 				"interstitial1",
-				new Repeat(new Union()
+				new Drop(new Repeat(new Union()
 						.add(Terminal.fromChar(' ', '\t'))
 						.add(new Reference("eol"))
-						.add(new Reference("comment"))).min(1).drop()
+						.add(new Reference("comment"))).min(1))
 		);
 		grammar.add("interstitial", new Repeat(new Reference("interstitial1")).max(1));
 		grammar.add(
 				"eol",
-				new Union()
+				new Drop(new Union()
 						.add(new Sequence().add(new Terminal((byte) 0x0D)).add(new Terminal((byte) 0x0A)))
-						.add(new Terminal((byte) 0x0A))
-						.drop()
+						.add(new Terminal((byte) 0x0A)))
 		);
 	}
 
@@ -172,7 +172,7 @@ public class GrammarFile {
 				.grammar(grammar)
 				.node("root")
 				.stack(() -> 0)
-				.callbacks(new ImmutableMap.Builder<String, Callback>().put("root", (store) -> {
+				.callbacks(new ImmutableMap.Builder<String, Callback<ClipStore>>().put("root", (store) -> {
 					Grammar grammar = new Grammar();
 					store = (ClipStore) Helper.<Pair<String, Node>>stackPopSingleList(store, (pair) -> {
 						grammar.add(pair.first, pair.second);
@@ -215,7 +215,7 @@ public class GrammarFile {
 				}).put("drop", (store) -> {
 					Node child = store.stackTop();
 					store = (ClipStore) store.popStack();
-					return store.pushStack(child.drop());
+					return store.pushStack(new Drop(child));
 				}).put("not", (store) -> {
 					Node child = store.stackTop();
 					store = (ClipStore) store.popStack();

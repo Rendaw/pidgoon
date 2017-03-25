@@ -1,14 +1,14 @@
 package com.zarbosoft.pidgoon;
 
-import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.internal.Position;
 
 import java.util.stream.Collectors;
 
 public class InvalidStream extends RuntimeException {
 	private static final long serialVersionUID = -1049832348704101941L;
 
-	public InvalidStream(final ParseContext context) {
-		this(context, "Bad input");
+	public InvalidStream(final ParseContext context, final Position position) {
+		this(context, position.toString());
 	}
 
 	public InvalidStream(final ParseContext context, final String string) {

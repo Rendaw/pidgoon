@@ -2,7 +2,7 @@ package com.zarbosoft.pidgoon.events;
 
 import com.zarbosoft.pidgoon.internal.BaseStore;
 import com.zarbosoft.pidgoon.internal.BranchingStack;
-import com.zarbosoft.pidgoon.source.Position;
+import com.zarbosoft.pidgoon.internal.Position;
 
 public class Store extends BaseStore {
 
@@ -18,27 +18,27 @@ public class Store extends BaseStore {
 	}
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Store split(final BranchingStack<Object> stack) {
+	public com.zarbosoft.pidgoon.internal.Store split(final BranchingStack<Object> stack) {
 		return new Store(stack, top);
 	}
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Store pop(final boolean combine) {
+	public com.zarbosoft.pidgoon.internal.Store pop(final boolean combine) {
 		return this;
 	}
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Store push() {
+	public com.zarbosoft.pidgoon.internal.Store push() {
 		return this;
 	}
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Store inject(final long size) {
+	public com.zarbosoft.pidgoon.internal.Store inject(final long size) {
 		return this;
 	}
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Store record(final Position position) {
+	public com.zarbosoft.pidgoon.internal.Store record(final Position position) {
 		return new Store(stack, ((com.zarbosoft.pidgoon.events.Position) position).get());
 	}
 

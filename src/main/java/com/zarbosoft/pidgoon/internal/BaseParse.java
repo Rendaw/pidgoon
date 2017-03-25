@@ -1,8 +1,5 @@
 package com.zarbosoft.pidgoon.internal;
 
-import com.zarbosoft.pidgoon.Grammar;
-import com.zarbosoft.pidgoon.bytes.Callback;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -59,7 +56,7 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 		return out;
 	}
 
-	public P callbacks(final Map<String, Callback> callbacks) {
+	public P callbacks(final Map<String, ? extends Callback<?>> callbacks) {
 		if (this.callbacks != null)
 			throw new IllegalArgumentException("Callbacks already specified");
 		if (callbacks == null)

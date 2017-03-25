@@ -1,11 +1,11 @@
 package com.zarbosoft.pidgoon.events;
 
-import com.zarbosoft.pidgoon.internal.Node;
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.internal.State;
+import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Store;
 import org.pcollections.PMap;
 
 public class Terminal extends Node {
@@ -35,14 +35,11 @@ public class Terminal extends Node {
 			}
 
 			@Override
-			public void parse(final ParseContext step, final com.zarbosoft.pidgoon.source.Position sourcePosition) {
+			public void parse(final ParseContext step, final com.zarbosoft.pidgoon.internal.Position sourcePosition) {
 				Store store = (Store) prestore;
 				final Position position = (Position) sourcePosition;
-				if (!drop)
-					store = store.record(position);
+				store = store.record(position);
 				if (value.matches(position.get())) {
-					if (cut)
-						parent.cut(step);
 					parent.advance(step, store, this);
 				} else {
 					parent.error(step, store, this);

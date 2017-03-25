@@ -1,11 +1,11 @@
 package com.zarbosoft.pidgoon.nodes;
 
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.BaseParent;
-import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Store;
 import org.pcollections.PMap;
 
 public class Repeat extends Node {
@@ -45,9 +45,7 @@ public class Repeat extends Node {
 			}
 
 			public void advance(final ParseContext step, final Store store, final Object cause) {
-				if (cut)
-					parent.cut(step);
-				final Store tempStore = store.pop(!drop);
+				final Store tempStore = store.pop(true);
 				final long nextCount = count + 1;
 				if ((max != null) && (nextCount == max)) {
 					parent.advance(step, tempStore, cause);
@@ -85,15 +83,11 @@ public class Repeat extends Node {
 			out = "?";
 		else
 			out = String.format("{%d, %d}", min, max);
-		if (!root.drop && (
-				(root instanceof Sequence) || (root instanceof Union)
-		)) {
+		if ((root instanceof Sequence) || (root instanceof Union)) {
 			out = String.format("(%s)%s", root, out);
 		} else {
 			out = String.format("%s%s", root, out);
 		}
-		if (drop)
-			return String.format("#(%s)", out);
 		return out;
 	}
 }

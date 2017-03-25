@@ -1,27 +1,17 @@
 package com.zarbosoft.pidgoon.bytes;
 
-import com.zarbosoft.pidgoon.internal.NamedOperator;
-import com.zarbosoft.pidgoon.internal.Node;
-import com.zarbosoft.pidgoon.source.Store;
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.internal.Callback;
 
-import java.util.Map;
+public class Operator extends com.zarbosoft.pidgoon.internal.Operator<ClipStore> {
 
-public class Operator extends NamedOperator {
-
-	public Operator(final String name, final Node root) {
-		super(name, root);
+	public Operator(
+			final Node root, final Callback<ClipStore> callback
+	) {
+		super(root, callback);
 	}
 
-	public Operator(final String name) {
-		super(name);
+	public Operator(final Callback<ClipStore> callback) {
+		super(callback);
 	}
-
-	@Override
-	protected Store callback(final Store store, final Map<String, Object> callbacks) {
-		final Object found = callbacks.get(name);
-		if (found == null)
-			return store;
-		return ((Callback) found).accept(store);
-	}
-
 }

@@ -2,7 +2,6 @@ package com.zarbosoft.pidgoon.internal;
 
 import com.google.common.base.Strings;
 import com.google.common.primitives.UnsignedBytes;
-import com.zarbosoft.pidgoon.source.Store;
 import com.zarbosoft.rendaw.common.Pair;
 
 import java.util.List;

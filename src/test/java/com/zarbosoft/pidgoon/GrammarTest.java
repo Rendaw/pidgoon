@@ -1,10 +1,11 @@
 package com.zarbosoft.pidgoon;
 
 import com.google.common.collect.ImmutableMap;
-import com.zarbosoft.pidgoon.bytes.Callback;
+import com.zarbosoft.pidgoon.bytes.ClipStore;
 import com.zarbosoft.pidgoon.bytes.Grammar;
 import com.zarbosoft.pidgoon.bytes.Parse;
 import com.zarbosoft.pidgoon.bytes.Terminal;
+import com.zarbosoft.pidgoon.internal.Callback;
 import com.zarbosoft.pidgoon.nodes.*;
 import org.junit.Test;
 
@@ -43,7 +44,7 @@ public class GrammarTest {
 		final Object result = new Parse<>()
 				.grammar(grammar)
 				.node("two")
-				.callbacks(new ImmutableMap.Builder<String, Callback>().put("two", s -> {
+				.callbacks(new ImmutableMap.Builder<String, Callback<ClipStore>>().put("two", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
 				.parse("azz");
@@ -57,7 +58,7 @@ public class GrammarTest {
 		final Object result = new Parse<>()
 				.grammar(grammar)
 				.node("one")
-				.callbacks(new ImmutableMap.Builder<String, Callback>().put("one", s -> {
+				.callbacks(new ImmutableMap.Builder<String, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
 				.parse("qz");
@@ -78,7 +79,7 @@ public class GrammarTest {
 		new Parse<>()
 				.grammar(grammar)
 				.node("one")
-				.callbacks(new ImmutableMap.Builder<String, Callback>().put("one", s -> {
+				.callbacks(new ImmutableMap.Builder<String, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
 				.parse("az");
@@ -96,7 +97,7 @@ public class GrammarTest {
 		final Object result = new Parse<>()
 				.grammar(grammar)
 				.node("one")
-				.callbacks(new ImmutableMap.Builder<String, Callback>().put("one", s -> {
+				.callbacks(new ImmutableMap.Builder<String, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
 				.parse("za");
@@ -116,7 +117,7 @@ public class GrammarTest {
 		final Object result = new Parse<>()
 				.grammar(grammar)
 				.node("one")
-				.callbacks(new ImmutableMap.Builder<String, Callback>().put("one", s -> {
+				.callbacks(new ImmutableMap.Builder<String, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
 				.parse("zaz");
@@ -130,7 +131,7 @@ public class GrammarTest {
 		final Object result = new Parse<>()
 				.grammar(grammar)
 				.node("one")
-				.callbacks(new ImmutableMap.Builder<String, Callback>().put("one", s -> {
+				.callbacks(new ImmutableMap.Builder<String, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
 				.parse("zz");

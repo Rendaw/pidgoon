@@ -1,11 +1,11 @@
 package com.zarbosoft.pidgoon.nodes;
 
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.BaseParent;
-import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Store;
 import org.pcollections.PMap;
 
 public class Not extends Node {
@@ -26,14 +26,12 @@ public class Not extends Node {
 		root.context(context, store.push(), new BaseParent(parent) {
 			@Override
 			public void error(final ParseContext step, final Store store, final Object cause) {
-				if (cut)
-					parent.cut(step);
-				parent.advance(step, store.pop(!drop), cause);
+				parent.advance(step, store.pop(true), cause);
 			}
 
 			@Override
-			public void advance(final ParseContext step, final Store store, final Object cause) {
-				store.pop(!drop);
+			public void advance(final ParseContext step, Store store, final Object cause) {
+				store = store.pop(true);
 				super.error(step, store, cause);
 			}
 
@@ -46,17 +44,11 @@ public class Not extends Node {
 
 	public String toString() {
 		final String out;
-		if (!root.drop && (
-				(root instanceof Sequence) ||
-						(root instanceof Union) ||
-						(root instanceof Repeat)
-		)) {
+		if ((root instanceof Sequence) || (root instanceof Union) || (root instanceof Repeat)) {
 			out = String.format("~(%s)", root);
 		} else {
 			out = String.format("~%s", root);
 		}
-		if (drop)
-			return "#" + out;
 		return out;
 	}
 }

@@ -1,12 +1,12 @@
 package com.zarbosoft.pidgoon.nodes;
 
-import com.zarbosoft.pidgoon.internal.Node;
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.internal.Position;
 import com.zarbosoft.pidgoon.internal.State;
+import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Position;
-import com.zarbosoft.pidgoon.source.Store;
 import org.pcollections.PMap;
 
 public class Wildcard extends Node {
@@ -30,12 +30,7 @@ public class Wildcard extends Node {
 
 			@Override
 			public void parse(final ParseContext step, final Position position) {
-				if (cut)
-					parent.cut(step);
-				Store tempStore = store;
-				if (!drop)
-					tempStore = store.record(position);
-				parent.advance(step, tempStore, this);
+				parent.advance(step, store.record(position), this);
 			}
 		});
 	}

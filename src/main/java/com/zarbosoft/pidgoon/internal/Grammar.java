@@ -1,8 +1,6 @@
-package com.zarbosoft.pidgoon;
+package com.zarbosoft.pidgoon.internal;
 
-import com.zarbosoft.pidgoon.internal.*;
-import com.zarbosoft.pidgoon.source.Position;
-import com.zarbosoft.pidgoon.source.Store;
+import com.zarbosoft.pidgoon.*;
 import com.zarbosoft.rendaw.common.Pair;
 
 import java.util.*;
@@ -74,6 +72,8 @@ public class Grammar {
 	public ParseContext step(final ParseContext currentStep, final Position position) {
 		if (position.isEOF())
 			throw new RuntimeException("Cannot step; end of file reached.");
+		if (currentStep.leaves.isEmpty())
+			throw new InvalidStream(currentStep, String.format("Reached end of grammar.\n%s", position));
 		final ParseContext nextStep = new ParseContext(currentStep);
 		for (final State leaf : currentStep.leaves)
 			leaf.parse(nextStep, position);
@@ -110,8 +110,8 @@ public class Grammar {
 		if (nextStep.leaves.size() > nextStep.uncertaintyLimit)
 			throw new GrammarTooUncertain(nextStep, position);
 		if (nextStep.leaves.isEmpty() && nextStep.errors.size() == currentStep.leaves.size())
-			throw new InvalidStream(nextStep);
-		/*
+			throw new InvalidStream(nextStep, position);
+			/*
 		if (nextStep.ambiguityHistory != null)
 			System.out.println(String.format(
 					"\n%d ==============\n%d\n%s\n%s\n",
@@ -120,7 +120,7 @@ public class Grammar {
 					position,
 					nextStep.leaves.stream().map(l -> l.toString()).collect(Collectors.joining("\n"))
 			));
-		*/
+			*/
 		return nextStep;
 	}
 }

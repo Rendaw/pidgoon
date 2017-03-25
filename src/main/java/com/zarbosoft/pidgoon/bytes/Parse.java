@@ -2,9 +2,10 @@ package com.zarbosoft.pidgoon.bytes;
 
 import com.google.common.primitives.Bytes;
 import com.zarbosoft.pidgoon.InvalidStream;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.BaseParse;
-import com.zarbosoft.pidgoon.internal.ParseContext;
 import com.zarbosoft.pidgoon.nodes.Sequence;
+import com.zarbosoft.rendaw.common.Pair;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -51,12 +52,7 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 		return (O) context.results.get(0);
 	}
 
-	public static class Match<O> {
-		public Position end;
-		public List<O> results;
-	}
-
-	public Match<O> longestMatchFromStart(final InputStream stream) {
+	public Pair<ParseContext, Position> longestMatchFromStart(final InputStream stream) {
 		ClipStore store = new ClipStore();
 		if (initialStack != null)
 			store = (ClipStore) store.pushStack(initialStack.get());
@@ -65,19 +61,19 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 				grammar.prepare(node, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
 		if (position.isEOF())
 			return null;
-		Match<O> match = null;
+		Pair<ParseContext, Position> record = new Pair<>(context, position);
 		while (!position.isEOF()) {
 			try {
 				context = grammar.step(context, position);
 			} catch (final InvalidStream e) {
 				break;
 			}
+			if (context.leaves.isEmpty())
+				break;
 			position = position.advance();
-			match = new Match<>();
-			match.end = position;
-			match.results = (List<O>) context.results;
+			record = new Pair<>(context, position);
 		}
-		return match;
+		return record;
 	}
 
 	public static Sequence byteSeq(final List<Byte> list) {

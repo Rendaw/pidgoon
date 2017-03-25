@@ -2,12 +2,12 @@ package com.zarbosoft.pidgoon.nodes;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.BaseParent;
-import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Store;
 import com.zarbosoft.rendaw.common.Pair;
 import org.pcollections.HashTreePMap;
 import org.pcollections.PMap;
@@ -40,7 +40,7 @@ public class Set extends Node {
 
 		@Override
 		public void advance(final ParseContext step, final Store store, final Object cause) {
-			Set.this.advance(step, store.pop(!drop), parent, HashTreePMap.empty(), cause, remaining);
+			Set.this.advance(step, store.pop(true), parent, HashTreePMap.empty(), cause, remaining);
 		}
 
 		@Override
@@ -58,8 +58,6 @@ public class Set extends Node {
 			final java.util.Set<Pair<Node, Boolean>> remaining
 	) {
 		if (remaining.stream().noneMatch(c -> c.second)) {
-			if (cut)
-				parent.cut(step);
 			parent.advance(step, store, cause);
 		}
 		remaining.forEach(c -> {
@@ -86,12 +84,10 @@ public class Set extends Node {
 
 	public String toString() {
 		final String out = children.stream().map(c -> {
-			if (!c.first.drop && (c.first instanceof Union))
+			if (c.first instanceof Union)
 				return String.format("(%s)", c.first);
 			return c.first.toString();
 		}).collect(Collectors.joining(" "));
-		if (drop)
-			return String.format("#{%s}", out);
 		return String.format("{%s}", out);
 	}
 }

@@ -1,5 +1,4 @@
-package com.zarbosoft.pidgoon.source;
-
+package com.zarbosoft.pidgoon.internal;
 
 public interface Store {
 	default Store pop() {

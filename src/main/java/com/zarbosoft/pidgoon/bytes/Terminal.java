@@ -5,9 +5,13 @@ import com.google.common.collect.ImmutableRangeSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.zarbosoft.pidgoon.InvalidGrammar;
-import com.zarbosoft.pidgoon.internal.*;
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
+import com.zarbosoft.pidgoon.internal.Helper;
+import com.zarbosoft.pidgoon.internal.Parent;
+import com.zarbosoft.pidgoon.internal.State;
+import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Store;
 import org.pcollections.PMap;
 
 import java.util.ArrayList;
@@ -94,14 +98,11 @@ public class Terminal extends Node {
 			}
 
 			@Override
-			public void parse(final ParseContext step, final com.zarbosoft.pidgoon.source.Position sourcePosition) {
+			public void parse(final ParseContext step, final com.zarbosoft.pidgoon.internal.Position sourcePosition) {
 				Store store = prestore;
 				final Position position = (Position) sourcePosition;
-				if (!drop)
-					store = store.record(position);
+				store = store.record(position);
 				if (value.contains(position.get())) {
-					if (cut)
-						parent.cut(step);
 					parent.advance(step, store, this);
 				} else {
 					parent.error(step, store, this);

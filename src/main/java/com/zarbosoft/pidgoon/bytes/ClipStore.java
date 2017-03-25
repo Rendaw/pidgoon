@@ -2,7 +2,7 @@ package com.zarbosoft.pidgoon.bytes;
 
 import com.zarbosoft.pidgoon.internal.BaseStore;
 import com.zarbosoft.pidgoon.internal.BranchingStack;
-import com.zarbosoft.pidgoon.source.Store;
+import com.zarbosoft.pidgoon.internal.Store;
 
 public class ClipStore extends BaseStore {
 
@@ -33,7 +33,8 @@ public class ClipStore extends BaseStore {
 		final BranchingStack<Clip> above = data.pop();
 		if (combine)
 			return new ClipStore(stack, above.set(above.top().cat(top)));
-		else return new ClipStore(stack, above);
+		else
+			return new ClipStore(stack, above);
 	}
 
 	@Override
@@ -45,7 +46,8 @@ public class ClipStore extends BaseStore {
 	public Store inject(final long size) {
 		final Clip top = data.top();
 		BranchingStack<Clip> pointer = data.pop();
-		for (long i = 0; i < size; ++i) pointer = pointer.push(new Clip());
+		for (long i = 0; i < size; ++i)
+			pointer = pointer.push(new Clip());
 		pointer = pointer.push(top);
 		return new ClipStore(stack, pointer);
 	}
@@ -55,7 +57,7 @@ public class ClipStore extends BaseStore {
 	}
 
 	@Override
-	public Store record(final com.zarbosoft.pidgoon.source.Position position) {
+	public Store record(final com.zarbosoft.pidgoon.internal.Position position) {
 		return new ClipStore(stack, data.set(data.top().cat(((Position) position).getStoreData())));
 	}
 }

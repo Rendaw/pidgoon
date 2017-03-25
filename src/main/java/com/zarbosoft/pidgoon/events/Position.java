@@ -1,6 +1,6 @@
 package com.zarbosoft.pidgoon.events;
 
-class Position implements com.zarbosoft.pidgoon.source.Position {
+class Position implements com.zarbosoft.pidgoon.internal.Position {
 
 	public final Event event;
 	public final String at;
@@ -13,7 +13,7 @@ class Position implements com.zarbosoft.pidgoon.source.Position {
 	}
 
 	@Override
-	public com.zarbosoft.pidgoon.source.Position advance() {
+	public com.zarbosoft.pidgoon.internal.Position advance() {
 		return this;
 	}
 

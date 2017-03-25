@@ -1,6 +1,6 @@
 package com.zarbosoft.pidgoon.internal;
 
-import com.zarbosoft.pidgoon.source.Store;
+import com.zarbosoft.pidgoon.ParseContext;
 
 public interface Parent {
 	void advance(ParseContext step, Store store, Object cause);

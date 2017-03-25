@@ -1,7 +1,5 @@
 package com.zarbosoft.pidgoon;
 
-import com.zarbosoft.pidgoon.internal.ParseContext;
-
 import java.util.stream.Collectors;
 
 public class GrammarTooUncertain extends RuntimeException {

@@ -1,8 +1,8 @@
 package com.zarbosoft.pidgoon.events;
 
-import com.zarbosoft.pidgoon.Grammar;
 import com.zarbosoft.pidgoon.InvalidStream;
-import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.ParseContext;
+import com.zarbosoft.pidgoon.internal.Grammar;
 
 import java.util.Map;
 
@@ -45,4 +45,7 @@ public class EventStream<O> {
 		return (O) context.results.get(0);
 	}
 
+	public ParseContext context() {
+		return context;
+	}
 }

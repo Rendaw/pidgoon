@@ -1,4 +1,4 @@
-package com.zarbosoft.pidgoon.source;
+package com.zarbosoft.pidgoon.internal;
 
 public interface Position {
 

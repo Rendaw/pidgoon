@@ -1,11 +1,11 @@
 package com.zarbosoft.pidgoon.nodes;
 
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.BaseParent;
-import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Store;
 import org.pcollections.PMap;
 
 import java.util.ArrayList;
@@ -34,9 +34,7 @@ public class Union extends Node {
 			p.second.context(context, store.push(), new BaseParent(parent) {
 				@Override
 				public void advance(final ParseContext step, final Store store, final Object cause) {
-					if (cut)
-						parent.cut(step);
-					parent.advance(step, store.pop(!drop), cause);
+					parent.advance(step, store.pop(true), cause);
 				}
 
 				@Override
@@ -48,9 +46,6 @@ public class Union extends Node {
 	}
 
 	public String toString() {
-		final String out = children.stream().map(c -> c.toString()).collect(Collectors.joining(" | "));
-		if (drop)
-			return String.format("#(%s)", out);
-		return out;
+		return children.stream().map(c -> c.toString()).collect(Collectors.joining(" | "));
 	}
 }

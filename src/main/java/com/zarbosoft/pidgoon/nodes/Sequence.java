@@ -1,11 +1,11 @@
 package com.zarbosoft.pidgoon.nodes;
 
+import com.zarbosoft.pidgoon.Node;
+import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.BaseParent;
-import com.zarbosoft.pidgoon.internal.Node;
 import com.zarbosoft.pidgoon.internal.Parent;
-import com.zarbosoft.pidgoon.internal.ParseContext;
+import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
-import com.zarbosoft.pidgoon.source.Store;
 import org.pcollections.PMap;
 
 import java.util.ArrayList;
@@ -41,11 +41,9 @@ public class Sequence extends Node {
 
 				@Override
 				public void advance(final ParseContext step, final Store store, final Object cause) {
-					final Store tempStore = store.pop(!drop);
+					final Store tempStore = store.pop(true);
 					final int nextStep = this.step + 1;
 					if (nextStep >= children.size()) {
-						if (cut)
-							parent.cut(step);
 						parent.advance(step, tempStore, cause);
 					} else {
 						children.get(nextStep).context(step, tempStore.push(), new SeqParent(parent, nextStep), cause);
@@ -63,12 +61,10 @@ public class Sequence extends Node {
 
 	public String toString() {
 		final String out = children.stream().map(c -> {
-			if (!c.drop && (c instanceof Union))
+			if (c instanceof Union)
 				return String.format("(%s)", c);
 			return c.toString();
 		}).collect(Collectors.joining(" "));
-		if (drop)
-			return String.format("#(%s)", out);
 		return out;
 	}
 }

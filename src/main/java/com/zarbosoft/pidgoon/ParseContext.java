@@ -1,8 +1,9 @@
-package com.zarbosoft.pidgoon.internal;
+package com.zarbosoft.pidgoon;
 
-import com.zarbosoft.pidgoon.Grammar;
-import com.zarbosoft.pidgoon.Stats;
-import com.zarbosoft.pidgoon.source.Position;
+import com.zarbosoft.pidgoon.internal.BranchingStack;
+import com.zarbosoft.pidgoon.internal.Grammar;
+import com.zarbosoft.pidgoon.internal.Position;
+import com.zarbosoft.pidgoon.internal.State;
 import com.zarbosoft.rendaw.common.Pair;
 
 import java.util.ArrayList;

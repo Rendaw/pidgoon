@@ -1,9 +1,10 @@
 package com.zarbosoft.pidgoon;
 
 import com.google.common.collect.ImmutableMap;
-import com.zarbosoft.pidgoon.bytes.Callback;
+import com.zarbosoft.pidgoon.bytes.ClipStore;
 import com.zarbosoft.pidgoon.bytes.GrammarFile;
 import com.zarbosoft.pidgoon.bytes.Parse;
+import com.zarbosoft.pidgoon.internal.Callback;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -58,7 +59,7 @@ public class GrammarFileTest {
 	public void testNot() {
 		final String result = new Parse<String>()
 				.grammar(GrammarFile.parse().parse("root : ~[a];"))
-				.callbacks(ImmutableMap.<String, Callback>builder()
+				.callbacks(ImmutableMap.<String, Callback<ClipStore>>builder()
 						.put("root", s -> s.pushStack(s.topData().toString()))
 						.build())
 				.node("root")

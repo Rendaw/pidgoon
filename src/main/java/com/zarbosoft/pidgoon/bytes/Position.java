@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
-public class Position implements com.zarbosoft.pidgoon.source.Position {
+public class Position implements com.zarbosoft.pidgoon.internal.Position {
 	InputStream stream;
 
 	private int bufUsed = 0;
