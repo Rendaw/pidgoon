@@ -35,6 +35,11 @@ public class Terminal extends Node {
 			}
 
 			@Override
+			public <T> T color() {
+				return (T) prestore.color;
+			}
+
+			@Override
 			public void parse(final ParseContext step, final com.zarbosoft.pidgoon.internal.Position sourcePosition) {
 				Store store = (Store) prestore;
 				final Position position = (Position) sourcePosition;

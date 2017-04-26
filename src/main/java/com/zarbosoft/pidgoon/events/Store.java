@@ -12,14 +12,14 @@ public class Store extends BaseStore {
 		this.top = null;
 	}
 
-	public Store(final BranchingStack<Object> stack, final Event top) {
-		super(stack);
+	public Store(final BranchingStack<Object> stack, final Event top, final Object color) {
+		super(stack, color);
 		this.top = top;
 	}
 
 	@Override
 	public com.zarbosoft.pidgoon.internal.Store split(final BranchingStack<Object> stack) {
-		return new Store(stack, top);
+		return new Store(stack, top, color);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class Store extends BaseStore {
 
 	@Override
 	public com.zarbosoft.pidgoon.internal.Store record(final Position position) {
-		return new Store(stack, ((com.zarbosoft.pidgoon.events.Position) position).get());
+		return new Store(stack, ((com.zarbosoft.pidgoon.events.Position) position).get(), color);
 	}
 
 	public Event top() {

@@ -29,6 +29,11 @@ public class Wildcard extends Node {
 			}
 
 			@Override
+			public <T> T color() {
+				return (T) store.color;
+			}
+
+			@Override
 			public void parse(final ParseContext step, final Position position) {
 				parent.advance(step, store.record(position), this);
 			}

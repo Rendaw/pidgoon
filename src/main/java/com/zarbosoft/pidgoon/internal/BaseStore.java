@@ -1,16 +1,18 @@
 package com.zarbosoft.pidgoon.internal;
 
-public abstract class BaseStore implements Store {
+public abstract class BaseStore extends Store {
 	protected final BranchingStack<Object> stack;
 
 	protected abstract Store split(BranchingStack<Object> stack);
 
 	public BaseStore() {
 		stack = null;
+		color = null;
 	}
 
-	protected BaseStore(final BranchingStack<Object> stack) {
+	protected BaseStore(final BranchingStack<Object> stack, final Object color) {
 		this.stack = stack;
+		this.color = color;
 	}
 
 	@Override

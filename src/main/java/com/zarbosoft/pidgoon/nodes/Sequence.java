@@ -67,4 +67,8 @@ public class Sequence extends Node {
 		}).collect(Collectors.joining(" "));
 		return out;
 	}
+
+	public boolean isEmpty() {
+		return children.isEmpty();
+	}
 }

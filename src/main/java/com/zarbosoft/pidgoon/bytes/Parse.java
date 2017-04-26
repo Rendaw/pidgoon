@@ -59,19 +59,19 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 		Position position = new Position(stream);
 		ParseContext context =
 				grammar.prepare(node, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
-		if (position.isEOF())
-			return null;
 		Pair<ParseContext, Position> record = new Pair<>(context, position);
+		if (position.isEOF())
+			return record;
 		while (!position.isEOF()) {
 			try {
 				context = grammar.step(context, position);
 			} catch (final InvalidStream e) {
 				break;
 			}
-			if (context.leaves.isEmpty())
-				break;
 			position = position.advance();
 			record = new Pair<>(context, position);
+			if (context.leaves.isEmpty())
+				break;
 		}
 		return record;
 	}

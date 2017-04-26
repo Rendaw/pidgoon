@@ -1,24 +1,26 @@
 package com.zarbosoft.pidgoon.internal;
 
-public interface Store {
-	default Store pop() {
+public abstract class Store {
+	public Object color;
+
+	public Store pop() {
 		return this.pop(false);
 	}
 
-	Store pop(boolean combine);
+	public abstract Store pop(boolean combine);
 
-	Store push();
+	public abstract Store push();
 
-	Store inject(long size);
+	public abstract Store inject(long size);
 
-	<T> T stackTop();
+	public abstract <T> T stackTop();
 
-	Store popStack();
+	public abstract Store popStack();
 
-	Store pushStack(Object o);
+	public abstract Store pushStack(Object o);
 
-	boolean hasOneResult();
+	public abstract boolean hasOneResult();
 
-	Store record(Position position);
+	public abstract Store record(Position position);
 
 }
