@@ -12,9 +12,9 @@ public class NestedGrammarTest {
 	@Test(expected = InvalidStream.class)
 	public void testInnerFailure() {
 		final Grammar inner = new Grammar();
-		inner.add("root", new Sequence().add(new Terminal(new EventA())).add(new Terminal(new EventB())));
+		inner.add("root", new Sequence().add(new MatchingEventTerminal(new EventA())).add(new MatchingEventTerminal(new EventB())));
 		final Grammar outer = new Grammar();
-		outer.add("root", new Repeat(new Operator(new Terminal(new EventA()), s -> {
+		outer.add("root", new Repeat(new Operator(new MatchingEventTerminal(new EventA()), s -> {
 			EventStream<Object> e = s.stackTop();
 			e = e.push(s.top(), "");
 			return s.popStack().pushStack(e);

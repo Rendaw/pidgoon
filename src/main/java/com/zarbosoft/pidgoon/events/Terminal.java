@@ -8,16 +8,11 @@ import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import org.pcollections.PMap;
 
-public class Terminal extends Node {
-	private final Event value;
-
-	public Terminal(final Event value) {
-		this.value = value;
+public abstract class Terminal extends Node {
+	public Terminal() {
 	}
 
-	public String toString() {
-		return String.format("'%s'", value.toString());
-	}
+	protected abstract boolean matches(final Event event);
 
 	@Override
 	public void context(
@@ -44,7 +39,7 @@ public class Terminal extends Node {
 				Store store = (Store) prestore;
 				final Position position = (Position) sourcePosition;
 				store = store.record(position);
-				if (value.matches(position.get())) {
+				if (matches(position.get())) {
 					parent.advance(step, store, this);
 				} else {
 					parent.error(step, store, this);
@@ -52,5 +47,4 @@ public class Terminal extends Node {
 			}
 		});
 	}
-
 }
