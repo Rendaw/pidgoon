@@ -21,7 +21,7 @@ public class Color extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, Reference.RefParent> seen,
+			final PMap<Object, Reference.RefParent> seen,
 			final Object cause
 	) {
 		store.color = color;

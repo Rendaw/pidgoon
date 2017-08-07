@@ -59,7 +59,7 @@ public class GrammarFileTest {
 	public void testNot() {
 		final String result = new Parse<String>()
 				.grammar(GrammarFile.parse().parse("root : ~[a];"))
-				.callbacks(ImmutableMap.<String, Callback<ClipStore>>builder()
+				.callbacks(ImmutableMap.<Object, Callback<ClipStore>>builder()
 						.put("root", s -> s.pushStack(s.topData().toString()))
 						.build())
 				.node("root")

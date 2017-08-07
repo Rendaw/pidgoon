@@ -19,7 +19,7 @@ public class Drop extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, Reference.RefParent> seen,
+			final PMap<Object, Reference.RefParent> seen,
 			final Object cause
 	) {
 		child.context(context, store.push(), new BaseParent(parent) {

@@ -33,7 +33,7 @@ public class Repeat extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, RefParent> seen,
+			final PMap<Object, RefParent> seen,
 			final Object cause
 	) {
 		class RepParent extends BaseParent {

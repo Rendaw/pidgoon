@@ -28,7 +28,7 @@ public class Reference extends Node {
 		}
 
 		public String buildPath(final String subpath) {
-			return originalParent.buildPath(String.format("<%s> . %s", name, subpath));
+			return originalParent.buildPath(String.format("<%s> . %s", key, subpath));
 		}
 
 		@Override
@@ -50,16 +50,16 @@ public class Reference extends Node {
 	}
 
 	private Node base = null;
-	private final String name;
+	private final Object key;
 
-	public Reference(final String name) {
+	public Reference(final Object key) {
 		super();
-		this.name = name;
+		this.key = key;
 	}
 
 	private Node get(final ParseContext context) {
 		if (base == null) {
-			base = context.grammar.getNode(name);
+			base = context.grammar.getNode(key);
 		}
 		return base;
 	}
@@ -69,18 +69,18 @@ public class Reference extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, RefParent> seen,
+			final PMap<Object, RefParent> seen,
 			final Object cause
 	) {
-		if (seen.containsKey(name)) {
-			seen.get(name).loopParents.add(parent);
+		if (seen.containsKey(key)) {
+			seen.get(key).loopParents.add(parent);
 			return;
 		}
 		final RefParent subParent = new RefParent(parent);
-		get(context).context(context, store.push(), subParent, seen.plus(name, subParent), cause);
+		get(context).context(context, store.push(), subParent, seen.plus(key, subParent), cause);
 	}
 
 	public String toString() {
-		return name;
+		return key.toString();
 	}
 }

@@ -15,7 +15,7 @@ public class ParseContext {
 
 	public ParseContext(
 			final Grammar grammar,
-			final Map<String, Object> callbacks,
+			final Map<Object, Object> callbacks,
 			final int errorHistoryLimit,
 			final int uncertaintyLimit,
 			final boolean dumpAmbiguity
@@ -31,7 +31,7 @@ public class ParseContext {
 	}
 
 	public Grammar grammar;
-	public Map<String, Object> callbacks;
+	public Map<Object, Object> callbacks;
 	public List<Object> errors = new ArrayList<>();
 	public List<Pair<Position, List<Object>>> errorHistory = new ArrayList<>();
 	public final int errorHistoryLimit;

@@ -14,7 +14,7 @@ public class Grammar extends com.zarbosoft.pidgoon.internal.Grammar {
 		return out;
 	}
 
-	public void add(final String name, final Node node) {
-		add(new NamedOperator(name, node));
+	public void add(final Object key, final Node node) {
+		add(new NamedOperator(key, node));
 	}
 }

@@ -53,7 +53,7 @@ public class Set extends Node {
 			final ParseContext step,
 			final Store store,
 			final Parent parent,
-			final PMap<String, RefParent> seen,
+			final PMap<Object, RefParent> seen,
 			final Object cause,
 			final java.util.Set<Pair<Node, Boolean>> remaining
 	) {
@@ -76,7 +76,7 @@ public class Set extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, RefParent> seen,
+			final PMap<Object, RefParent> seen,
 			final Object cause
 	) {
 		advance(context, store, parent, seen, cause, children);

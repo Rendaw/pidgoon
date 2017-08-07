@@ -172,7 +172,7 @@ public class GrammarFile {
 				.grammar(grammar)
 				.node("root")
 				.stack(() -> 0)
-				.callbacks(new ImmutableMap.Builder<String, Callback<ClipStore>>().put("root", (store) -> {
+				.callbacks(new ImmutableMap.Builder<Object, Callback<ClipStore>>().put("root", (store) -> {
 					Grammar grammar = new Grammar();
 					store = (ClipStore) Helper.<Pair<String, Node>>stackPopSingleList(store, (pair) -> {
 						grammar.add(pair.first, pair.second);

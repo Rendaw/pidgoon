@@ -12,6 +12,6 @@ public abstract class Node {
 	}
 
 	public abstract void context(
-			ParseContext context, Store store, Parent parent, PMap<String, RefParent> seen, Object cause
+			ParseContext context, Store store, Parent parent, PMap<Object, RefParent> seen, Object cause
 	);
 }

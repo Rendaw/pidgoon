@@ -6,21 +6,21 @@ import java.util.Map;
 
 public class NamedOperator<S> extends BaseOperator {
 
-	public final String name;
+	public final Object key;
 
-	public NamedOperator(final String name, final Node root) {
+	public NamedOperator(final Object key, final Node root) {
 		super(root);
-		this.name = name;
+		this.key = key;
 	}
 
-	public NamedOperator(final String name) {
+	public NamedOperator(final Object key) {
 		super();
-		this.name = name;
+		this.key = key;
 	}
 
 	@Override
-	protected Store callback(final Store store, final Map<String, Object> callbacks) {
-		final Object found = callbacks.get(name);
+	protected Store callback(final Store store, final Map<Object, Object> callbacks) {
+		final Object found = callbacks.get(key);
 		if (found == null)
 			return store;
 		return ((Callback<S>) found).accept(store);

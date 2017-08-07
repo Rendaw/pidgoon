@@ -27,7 +27,7 @@ public class Union extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, RefParent> seen,
+			final PMap<Object, RefParent> seen,
 			final Object cause
 	) {
 		enumerate(children.stream()).forEach(p -> {

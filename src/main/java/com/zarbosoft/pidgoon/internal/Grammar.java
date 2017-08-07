@@ -7,18 +7,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Grammar {
-	private final Map<String, NamedOperator> nodes = new HashMap<>();
+	private final Map<Object, NamedOperator> nodes = new HashMap<>();
 
 	public void add(final NamedOperator node) {
-		if (nodes.containsKey(node.name))
-			throw new AssertionError(String.format("Node with name [%s] already exists.", node.name));
-		nodes.put(node.name, node);
+		if (nodes.containsKey(node.key))
+			throw new AssertionError(String.format("Node with name [%s] already exists.", node.key));
+		nodes.put(node.key, node);
 	}
 
-	public Node getNode(final String node) {
-		if (!nodes.containsKey(node))
-			throw new InvalidGrammar(String.format("No rule named %s", node));
-		return nodes.get(node);
+	public Node getNode(final Object key) {
+		if (!nodes.containsKey(key))
+			throw new InvalidGrammar(String.format("No rule named %s", key));
+		return nodes.get(key);
 	}
 
 	public String toString() {
@@ -31,7 +31,7 @@ public class Grammar {
 
 	public ParseContext prepare(
 			final String node,
-			final Map<String, Object> callbacks,
+			final Map<Object, Object> callbacks,
 			final Store initialStore,
 			final int errorHistoryLimit,
 			final int uncertaintyLimit,

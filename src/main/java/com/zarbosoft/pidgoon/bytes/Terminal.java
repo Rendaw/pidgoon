@@ -87,7 +87,7 @@ public class Terminal extends Node {
 			final ParseContext context,
 			final Store prestore,
 			final Parent parent,
-			final PMap<String, RefParent> seen,
+			final PMap<Object, RefParent> seen,
 			final Object cause
 	) {
 		final Node outer = this;

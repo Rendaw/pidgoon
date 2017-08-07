@@ -20,7 +20,7 @@ public class Not extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, RefParent> seen,
+			final PMap<Object, RefParent> seen,
 			final Object cause
 	) {
 		root.context(context, store.push(), new BaseParent(parent) {

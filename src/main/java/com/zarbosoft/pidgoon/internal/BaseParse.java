@@ -9,7 +9,7 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 	protected Grammar grammar;
 	protected String node = "root";
 	protected Supplier<Object> initialStack;
-	protected Map<String, Object> callbacks;
+	protected Map<Object, Object> callbacks;
 	protected int errorHistoryLimit;
 	protected int uncertaintyLimit;
 	protected boolean dumpAmbiguity;
@@ -56,13 +56,13 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 		return out;
 	}
 
-	public P callbacks(final Map<String, ? extends Callback<?>> callbacks) {
+	public P callbacks(final Map<Object, ? extends Callback<?>> callbacks) {
 		if (this.callbacks != null)
 			throw new IllegalArgumentException("Callbacks already specified");
 		if (callbacks == null)
 			return (P) this;
 		final P out = split();
-		final Map<String, Object> newCallbacks = new HashMap<>();
+		final Map<Object, Object> newCallbacks = new HashMap<>();
 		callbacks.forEach((k, v) -> newCallbacks.put(k, v));
 		out.callbacks = newCallbacks;
 		return out;

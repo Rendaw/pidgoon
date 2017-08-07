@@ -21,14 +21,14 @@ public abstract class BaseOperator extends Node {
 		this.root = root;
 	}
 
-	protected abstract Store callback(Store store, Map<String, Object> callbacks);
+	protected abstract Store callback(Store store, Map<Object, Object> callbacks);
 
 	@Override
 	public void context(
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, RefParent> seen,
+			final PMap<Object, RefParent> seen,
 			final Object cause
 	) {
 		if (root == null) {

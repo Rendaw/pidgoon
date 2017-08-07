@@ -19,7 +19,7 @@ public class Cut extends Node {
 			final ParseContext context,
 			final Store store,
 			final Parent parent,
-			final PMap<String, Reference.RefParent> seen,
+			final PMap<Object, Reference.RefParent> seen,
 			final Object cause
 	) {
 		child.context(context, store, new BaseParent(parent) {

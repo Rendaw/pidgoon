@@ -15,7 +15,7 @@ public class EventStream<O> {
 	public EventStream(
 			final Grammar grammar,
 			final String node,
-			final Map<String, Object> callbacks,
+			final Map<Object, Object> callbacks,
 			final Store store,
 			final int errorHistoryLimit,
 			final int uncertaintyLimit,

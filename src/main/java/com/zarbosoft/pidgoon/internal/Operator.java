@@ -19,7 +19,7 @@ public class Operator<S> extends BaseOperator {
 	}
 
 	@Override
-	protected Store callback(final Store store, final Map<String, Object> callbacks) {
+	protected Store callback(final Store store, final Map<Object, Object> callbacks) {
 		return callback.accept(store);
 	}
 
