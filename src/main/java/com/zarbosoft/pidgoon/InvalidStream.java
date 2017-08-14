@@ -12,10 +12,14 @@ public class InvalidStream extends RuntimeException {
 	}
 
 	public InvalidStream(final ParseContext context, final String string) {
-		super(String.format("%s\n\n%s", string, context.errorHistory.stream().map(s -> String.format(
-				"%s\n%s\n",
-				s.first.toString(),
-				s.second.stream().map(l -> l.toString()).collect(Collectors.joining("\n"))
-		)).collect(Collectors.joining("\n"))));
+		super(String.format(
+				"%s\n" + "\n" + "History\n" + "=======\n" + "\n" + "%s",
+				string,
+				context.errorHistory.stream().map(s -> String.format(
+						"%s\nThe following failed to match:\n%s\n",
+						s.first.toString(),
+						s.second.stream().map(l -> l.toString()).collect(Collectors.joining("\n"))
+				)).collect(Collectors.joining("\n"))
+		));
 	}
 }

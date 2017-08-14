@@ -30,7 +30,7 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 			store = (ClipStore) store.pushStack(initialStack.get());
 		Position position = new Position(stream);
 		ParseContext context =
-				grammar.prepare(node, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
+				grammar.prepare(root, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
 		if (position.isEOF())
 			return null;
 		while (!position.isEOF()) {
@@ -58,7 +58,7 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 			store = (ClipStore) store.pushStack(initialStack.get());
 		Position position = new Position(stream);
 		ParseContext context =
-				grammar.prepare(node, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
+				grammar.prepare(root, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
 		Pair<ParseContext, Position> record = new Pair<>(context, position);
 		if (position.isEOF())
 			return record;

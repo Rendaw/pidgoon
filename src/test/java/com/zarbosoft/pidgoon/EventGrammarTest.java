@@ -18,7 +18,7 @@ public class EventGrammarTest {
 				"root",
 				new Sequence().add(new MatchingEventTerminal(new EventA())).add(new MatchingEventTerminal(new EventB()))
 		);
-		EventStream<Object> parse = new Parse<>().grammar(inner).node("root").parse();
+		EventStream<Object> parse = new Parse<>().grammar(inner).root("root").parse();
 		parse = parse.push(new EventB(), "");
 		parse = parse.push(new EventB(), "");
 		parse.finish();
@@ -31,7 +31,7 @@ public class EventGrammarTest {
 				"root",
 				new Sequence().add(new MatchingEventTerminal(new EventA())).add(new MatchingEventTerminal(new EventB()))
 		);
-		EventStream<Object> parse = new Parse<>().grammar(inner).node("root").parse();
+		EventStream<Object> parse = new Parse<>().grammar(inner).root("root").parse();
 		parse = parse.push(new EventA(), "");
 		parse = parse.push(new EventA(), "");
 		parse.finish();
@@ -44,7 +44,7 @@ public class EventGrammarTest {
 				"root",
 				new Sequence().add(new MatchingEventTerminal(new EventA())).add(new MatchingEventTerminal(new EventB()))
 		);
-		EventStream<Object> parse = new Parse<>().grammar(inner).node("root").parse();
+		EventStream<Object> parse = new Parse<>().grammar(inner).root("root").parse();
 		parse = parse.push(new EventA(), "");
 		parse = parse.push(new EventB(), "");
 	}

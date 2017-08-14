@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Grammar {
-	private final Map<Object, NamedOperator> nodes = new HashMap<>();
+	protected final Map<Object, NamedOperator> nodes = new HashMap<>();
 
 	public void add(final NamedOperator node) {
 		if (nodes.containsKey(node.key))
@@ -30,7 +30,7 @@ public class Grammar {
 	}
 
 	public ParseContext prepare(
-			final String node,
+			final Object root,
 			final Map<Object, Object> callbacks,
 			final Store initialStore,
 			final int errorHistoryLimit,
@@ -39,7 +39,7 @@ public class Grammar {
 	) {
 		final ParseContext context =
 				new ParseContext(this, callbacks, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
-		getNode(node).context(context, initialStore, new Parent() {
+		getNode(root).context(context, initialStore, new Parent() {
 			@Override
 			public void error(final ParseContext step, final Store store, final Object cause) {
 				step.errors.add(cause);
@@ -58,7 +58,7 @@ public class Grammar {
 
 			@Override
 			public String buildPath(final String rep) {
-				return node + " " + rep;
+				return root + " " + rep;
 			}
 
 			@Override
@@ -73,7 +73,9 @@ public class Grammar {
 		if (position.isEOF())
 			throw new RuntimeException("Cannot step; end of file reached.");
 		if (currentStep.leaves.isEmpty())
-			throw new InvalidStream(currentStep, String.format("Reached end of grammar.\n%s", position));
+			throw new InvalidStream(currentStep,
+					String.format("Reached end of grammar.\nCurrent position: %s", position)
+			);
 		final ParseContext nextStep = new ParseContext(currentStep);
 		for (final State leaf : currentStep.leaves)
 			leaf.parse(nextStep, position);

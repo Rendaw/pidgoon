@@ -16,7 +16,7 @@ public class GrammarTest {
 	public void testEOFFail() {
 		final Grammar grammar = new Grammar();
 		grammar.add("root", Terminal.fromChar('a'));
-		new Parse<>().grammar(grammar).node("root").parse("b");
+		new Parse<>().grammar(grammar).root("root").parse("b");
 	}
 
 	@Test
@@ -28,7 +28,7 @@ public class GrammarTest {
 						.add(Parse.stringSeq("zarolous"))
 						.add(new Union().add(Parse.stringSeq("zarolously").add(Parse.stringSeq("zindictive"))))
 		);
-		new Parse<>().grammar(grammar).node("root").parse("zarolous");
+		new Parse<>().grammar(grammar).root("root").parse("zarolous");
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class GrammarTest {
 		grammar.add("two", new Reference("one"));
 		final Object result = new Parse<>()
 				.grammar(grammar)
-				.node("two")
+				.root("two")
 				.callbacks(new ImmutableMap.Builder<Object, Callback<ClipStore>>().put("two", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
@@ -57,7 +57,7 @@ public class GrammarTest {
 		grammar.add("one", new Sequence().add(new Not(Terminal.fromChar('a'))).add(Terminal.fromChar('z')));
 		final Object result = new Parse<>()
 				.grammar(grammar)
-				.node("one")
+				.root("one")
 				.callbacks(new ImmutableMap.Builder<Object, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
@@ -69,7 +69,7 @@ public class GrammarTest {
 	public void testNot2() {
 		final Grammar grammar = new Grammar();
 		grammar.add("one", new Not(new Union().add(Terminal.fromChar('a')).add(Parse.stringSeq("zoq"))));
-		new Parse<>().grammar(grammar).node("one").parse("zot");
+		new Parse<>().grammar(grammar).root("one").parse("zot");
 	}
 
 	@Test(expected = InvalidStream.class)
@@ -78,7 +78,7 @@ public class GrammarTest {
 		grammar.add("one", new Sequence().add(new Not(Terminal.fromChar('a'))).add(Terminal.fromChar('z')));
 		new Parse<>()
 				.grammar(grammar)
-				.node("one")
+				.root("one")
 				.callbacks(new ImmutableMap.Builder<Object, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
@@ -96,7 +96,7 @@ public class GrammarTest {
 		);
 		final Object result = new Parse<>()
 				.grammar(grammar)
-				.node("one")
+				.root("one")
 				.callbacks(new ImmutableMap.Builder<Object, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
@@ -116,7 +116,7 @@ public class GrammarTest {
 		);
 		final Object result = new Parse<>()
 				.grammar(grammar)
-				.node("one")
+				.root("one")
 				.callbacks(new ImmutableMap.Builder<Object, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())
@@ -130,7 +130,7 @@ public class GrammarTest {
 		grammar.add("one", new Sequence().add(Terminal.fromChar('z')).add(new Set()).add(Terminal.fromChar('z')));
 		final Object result = new Parse<>()
 				.grammar(grammar)
-				.node("one")
+				.root("one")
 				.callbacks(new ImmutableMap.Builder<Object, Callback<ClipStore>>().put("one", s -> {
 					return s.pushStack(s.topData().toString());
 				}).build())

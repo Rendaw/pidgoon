@@ -18,6 +18,8 @@ public abstract class BaseOperator extends Node {
 
 	public BaseOperator(final Node root) {
 		super();
+		if (root == null)
+			throw new AssertionError();
 		this.root = root;
 	}
 

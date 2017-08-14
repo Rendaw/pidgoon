@@ -170,7 +170,7 @@ public class GrammarFile {
 			buildGrammar();
 		return new Parse<Grammar>()
 				.grammar(grammar)
-				.node("root")
+				.root("root")
 				.stack(() -> 0)
 				.callbacks(new ImmutableMap.Builder<Object, Callback<ClipStore>>().put("root", (store) -> {
 					Grammar grammar = new Grammar();

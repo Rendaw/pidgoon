@@ -14,7 +14,7 @@ public class EventStream<O> {
 
 	public EventStream(
 			final Grammar grammar,
-			final String node,
+			final Object root,
 			final Map<Object, Object> callbacks,
 			final Store store,
 			final int errorHistoryLimit,
@@ -22,7 +22,7 @@ public class EventStream<O> {
 			final boolean dumpAmbiguity
 	) {
 		this.grammar = grammar;
-		this.context = grammar.prepare(node, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
+		this.context = grammar.prepare(root, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
 	}
 
 	public EventStream(final ParseContext step, final Grammar grammar) {

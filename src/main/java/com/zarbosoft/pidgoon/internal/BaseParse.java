@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 public abstract class BaseParse<P extends BaseParse<P>> {
 
 	protected Grammar grammar;
-	protected String node = "root";
+	protected Object root = "root";
 	protected Supplier<Object> initialStack;
 	protected Map<Object, Object> callbacks;
 	protected int errorHistoryLimit;
@@ -22,7 +22,7 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 
 	public BaseParse(final BaseParse<P> other) {
 		grammar = other.grammar;
-		node = other.node;
+		root = other.root;
 		initialStack = other.initialStack;
 		callbacks = other.callbacks;
 		errorHistoryLimit = other.errorHistoryLimit;
@@ -40,11 +40,11 @@ public abstract class BaseParse<P extends BaseParse<P>> {
 		return out;
 	}
 
-	public P node(final String node) {
-		if (!this.node.equals("root"))
+	public P root(final Object key) {
+		if (!this.root.equals("root"))
 			throw new IllegalArgumentException("Node already specified");
 		final P out = split();
-		out.node = node;
+		out.root = key;
 		return out;
 	}
 

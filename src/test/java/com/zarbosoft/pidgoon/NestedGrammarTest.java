@@ -12,7 +12,10 @@ public class NestedGrammarTest {
 	@Test(expected = InvalidStream.class)
 	public void testInnerFailure() {
 		final Grammar inner = new Grammar();
-		inner.add("root", new Sequence().add(new MatchingEventTerminal(new EventA())).add(new MatchingEventTerminal(new EventB())));
+		inner.add(
+				"root",
+				new Sequence().add(new MatchingEventTerminal(new EventA())).add(new MatchingEventTerminal(new EventB()))
+		);
 		final Grammar outer = new Grammar();
 		outer.add("root", new Repeat(new Operator(new MatchingEventTerminal(new EventA()), s -> {
 			EventStream<Object> e = s.stackTop();
@@ -21,8 +24,8 @@ public class NestedGrammarTest {
 		})).min(2).max(2));
 		EventStream<Object> outerParse = new Parse<>()
 				.grammar(outer)
-				.stack(() -> new Parse<>().grammar(inner).node("root").parse())
-				.node("root")
+				.stack(() -> new Parse<>().grammar(inner).root("root").parse())
+				.root("root")
 				.parse();
 		outerParse = outerParse.push(new EventA(), "");
 		outerParse = outerParse.push(new EventA(), "");

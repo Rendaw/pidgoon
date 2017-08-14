@@ -12,37 +12,37 @@ import static org.junit.Assert.assertEquals;
 public class GrammarFileTest {
 	@Test
 	public void testClasses() {
-		new Parse<>().grammar(GrammarFile.parse().parse("rule : [a\\n]+ ;\n\n")).node("rule").parse("a\n");
+		new Parse<>().grammar(GrammarFile.parse().parse("rule : [a\\n]+ ;\n\n")).root("rule").parse("a\n");
 	}
 
 	@Test(expected = InvalidStream.class)
 	public void testClassesFail() {
-		new Parse<>().grammar(GrammarFile.parse().parse("rule : [a\\n]+ ;\n\n")).node("rule").parse("n");
+		new Parse<>().grammar(GrammarFile.parse().parse("rule : [a\\n]+ ;\n\n")).root("rule").parse("n");
 	}
 
 	@Test
 	public void testEscapes() {
-		new Parse<>().grammar(GrammarFile.parse().parse("rule : '\\\\' 'a';")).node("rule").parse("\\a");
+		new Parse<>().grammar(GrammarFile.parse().parse("rule : '\\\\' 'a';")).root("rule").parse("\\a");
 	}
 
 	@Test(expected = InvalidStream.class)
 	public void testEscapesFail() {
-		new Parse<>().grammar(GrammarFile.parse().parse("rule : '\\\\' 'a';")).node("rule").parse("a");
+		new Parse<>().grammar(GrammarFile.parse().parse("rule : '\\\\' 'a';")).root("rule").parse("a");
 	}
 
 	@Test
 	public void testEscapes2() {
-		new Parse<>().grammar(GrammarFile.parse().parse("rule : '\\'' 'a';")).node("rule").parse("'a");
+		new Parse<>().grammar(GrammarFile.parse().parse("rule : '\\'' 'a';")).root("rule").parse("'a");
 	}
 
 	@Test(expected = InvalidStream.class)
 	public void testEscapes2Fail() {
-		new Parse<>().grammar(GrammarFile.parse().parse("rule : '\\'' 'a';")).node("rule").parse("a");
+		new Parse<>().grammar(GrammarFile.parse().parse("rule : '\\'' 'a';")).root("rule").parse("a");
 	}
 
 	@Test
 	public void testGrammarFile() {
-		new Parse<>().grammar(GrammarFile.parse().parse("rule : 'h' 'i';\n\n")).node("rule").parse("hi");
+		new Parse<>().grammar(GrammarFile.parse().parse("rule : 'h' 'i';\n\n")).root("rule").parse("hi");
 	}
 
 	@Test
@@ -62,28 +62,28 @@ public class GrammarFileTest {
 				.callbacks(ImmutableMap.<Object, Callback<ClipStore>>builder()
 						.put("root", s -> s.pushStack(s.topData().toString()))
 						.build())
-				.node("root")
+				.root("root")
 				.parse("z");
 		assertEquals("z", result);
 	}
 
 	@Test
 	public void testRepMin() {
-		new Parse<>().grammar(GrammarFile.parse().parse("root : [a]+;")).node("root").parse("aa");
+		new Parse<>().grammar(GrammarFile.parse().parse("root : [a]+;")).root("root").parse("aa");
 	}
 
 	@Test
 	public void testNotBinding1() {
-		new Parse<>().grammar(GrammarFile.parse().parse("root : ~[a]+;")).node("root").parse("z");
+		new Parse<>().grammar(GrammarFile.parse().parse("root : ~[a]+;")).root("root").parse("z");
 	}
 
 	@Test
 	public void testNotBinding2() {
-		new Parse<>().grammar(GrammarFile.parse().parse("root : (~[a])+;")).node("root").parse("zg");
+		new Parse<>().grammar(GrammarFile.parse().parse("root : (~[a])+;")).root("root").parse("zg");
 	}
 
 	@Test
 	public void testNotBinding3() {
-		new Parse<>().grammar(GrammarFile.parse().parse("root : ~([a]+);")).node("root").parse("z");
+		new Parse<>().grammar(GrammarFile.parse().parse("root : ~([a]+);")).root("root").parse("z");
 	}
 }

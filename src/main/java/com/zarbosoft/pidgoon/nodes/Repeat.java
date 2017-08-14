@@ -60,7 +60,7 @@ public class Repeat extends Node {
 			@Override
 			public String buildPath(final String subpath) {
 				return parent.buildPath(String.format(
-						"rep*%d/%s%s . %s",
+						"rep[%d/%s%s] . %s",
 						count + 1,
 						min == 0 ? "" : String.format("%s-", min.toString()),
 						max == null ? "*" : max.toString(),
