@@ -30,8 +30,8 @@ public class EventStream<O> {
 		this.grammar = grammar;
 	}
 
-	public EventStream push(final Event e, final String s) {
-		final ParseContext nextStep = grammar.step(context, new Position(e, s, lastDistance++));
+	public EventStream push(final Event event, final Object at) {
+		final ParseContext nextStep = grammar.step(context, new Position(event, at, lastDistance++));
 		return new EventStream<O>(nextStep, grammar);
 	}
 
