@@ -4,6 +4,7 @@ import com.zarbosoft.pidgoon.InvalidStream;
 import com.zarbosoft.pidgoon.ParseContext;
 import com.zarbosoft.pidgoon.internal.Grammar;
 
+import java.util.List;
 import java.util.Map;
 
 public class EventStream<O> {
@@ -40,9 +41,13 @@ public class EventStream<O> {
 	}
 
 	public O finish() {
+		return finishAll().get(0);
+	}
+
+	public List<O> finishAll() {
 		if (context.results.isEmpty())
 			throw new InvalidStream(context, "Incomplete stream.");
-		return (O) context.results.get(0);
+		return (List<O>) context.results;
 	}
 
 	public ParseContext context() {
