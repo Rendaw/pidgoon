@@ -4,6 +4,9 @@ import com.zarbosoft.pidgoon.internal.Position;
 
 import java.util.stream.Collectors;
 
+/**
+ * The grammar couldn't match the stream (all branches failed before the stream ended).
+ */
 public class InvalidStream extends RuntimeException {
 	private static final long serialVersionUID = -1049832348704101941L;
 

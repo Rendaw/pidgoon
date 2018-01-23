@@ -4,6 +4,11 @@ import com.zarbosoft.pidgoon.Node;
 
 import java.util.Map;
 
+/**
+ * Runs code when the child node matches.
+ *
+ * @param <S>
+ */
 public class Operator<S> extends BaseOperator {
 
 	private final Callback<S> callback;

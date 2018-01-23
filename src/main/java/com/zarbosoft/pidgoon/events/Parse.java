@@ -14,6 +14,11 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 	public Parse() {
 	}
 
+	/**
+	 * Instead of pulling from an input stream, use the returned EventStream to push events to the parse.
+	 *
+	 * @return
+	 */
 	public EventStream<O> parse() {
 		Store store = new Store();
 		if (initialStack != null)
@@ -21,6 +26,12 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 		return new EventStream<>(grammar, root, callbacks, store, errorHistoryLimit, uncertaintyLimit, dumpAmbiguity);
 	}
 
+	/**
+	 * Parse by pulling events from the stream.
+	 *
+	 * @param data
+	 * @return
+	 */
 	public O parse(final Stream<Pair<? extends Event, Object>> data) {
 		final Common.Mutable<EventStream<O>> eventStream = new Common.Mutable<>(parse());
 		data.forEach(pair -> {

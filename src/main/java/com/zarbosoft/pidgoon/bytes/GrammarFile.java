@@ -8,6 +8,9 @@ import com.zarbosoft.pidgoon.internal.Helper;
 import com.zarbosoft.pidgoon.nodes.*;
 import com.zarbosoft.rendaw.common.Pair;
 
+/**
+ * A grammar for parsing files that describe a grammar in a BNF-like format.
+ */
 public class GrammarFile {
 	private static Grammar grammar;
 

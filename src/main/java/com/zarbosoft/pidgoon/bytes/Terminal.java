@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * A terminal is a node that matches a single byte.  Compares the read bye to a set of specified byte ranges.
+ */
 public class Terminal extends Node {
 	private final RangeSet<Byte> value;
 
@@ -25,6 +28,13 @@ public class Terminal extends Node {
 		this.value = value;
 	}
 
+	/**
+	 * Creates a terminal that matches any of the listed characters.  Note that only one of the characters matches.  Use
+	 * Grammar.stringSequence to match a sequence.
+	 *
+	 * @param units
+	 * @return
+	 */
 	public static Terminal fromChar(final char... units) {
 		final Byte[] converted = new Byte[units.length];
 		for (int i = 0; i < units.length; ++i)

@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 
 import static com.zarbosoft.rendaw.common.Common.enumerate;
 
+/**
+ * Match exactly one child.
+ */
 public class Union extends Node {
 	List<Node> children = new ArrayList<>();
 

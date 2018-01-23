@@ -1,5 +1,8 @@
 package com.zarbosoft.pidgoon.events;
 
+/**
+ * Use this terminal if the events themselves define matching conditions.
+ */
 public class MatchingEventTerminal extends Terminal {
 	private final MatchingEvent value;
 

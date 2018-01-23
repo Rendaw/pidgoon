@@ -15,6 +15,9 @@ import org.pcollections.PMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+/**
+ * Match each child exactly once.
+ */
 public class Set extends Node {
 	java.util.Set<Pair<Node, Boolean>> children = new HashSet<>();
 

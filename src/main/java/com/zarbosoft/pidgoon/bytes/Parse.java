@@ -52,6 +52,11 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 		return (O) context.results.get(0);
 	}
 
+	/**
+	 * Parse until the stream stops matching.
+	 * @param stream
+	 * @return
+	 */
 	public Pair<ParseContext, Position> longestMatchFromStart(final InputStream stream) {
 		ClipStore store = new ClipStore();
 		if (initialStack != null)

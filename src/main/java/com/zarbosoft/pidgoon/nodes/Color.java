@@ -7,6 +7,9 @@ import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.Store;
 import org.pcollections.PMap;
 
+/**
+ * Attaches the color to the partial parse branch when the child node matches. The color can be retrieved.
+ */
 public class Color extends Node {
 	private final Object color;
 	public final Node child;

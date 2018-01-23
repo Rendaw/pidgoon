@@ -8,6 +8,9 @@ import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import org.pcollections.PMap;
 
+/**
+ * Base node to match a single event.  Define `matches` to use.
+ */
 public abstract class Terminal extends Node {
 	public Terminal() {
 	}

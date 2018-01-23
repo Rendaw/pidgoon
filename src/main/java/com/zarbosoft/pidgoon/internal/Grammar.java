@@ -9,6 +9,11 @@ import java.util.stream.Collectors;
 public class Grammar {
 	protected final Map<Object, NamedOperator> nodes = new HashMap<>();
 
+	/**
+	 * Add a rule to the grammar.  Rules must be named operators.
+	 *
+	 * @param node
+	 */
 	public void add(final NamedOperator node) {
 		if (nodes.containsKey(node.key))
 			throw new AssertionError(String.format("Node with name [%s] already exists.", node.key));

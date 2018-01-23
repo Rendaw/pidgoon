@@ -8,6 +8,9 @@ import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import org.pcollections.PMap;
 
+/**
+ * Match the child 0 or multiple times.
+ */
 public class Repeat extends Node {
 	private final Node root;
 	private Long min = 0L;

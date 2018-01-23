@@ -7,6 +7,12 @@ import com.zarbosoft.pidgoon.internal.Grammar;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Created by Parse.  A push-based parse (user pushes events when they are available).  This is immutable - every `push`
+ * creates a new EventStream.  This allows branching if you nest parses.
+ *
+ * @param <O> Parse result type.  Returned by `finish`.
+ */
 public class EventStream<O> {
 
 	private long lastDistance = 0;

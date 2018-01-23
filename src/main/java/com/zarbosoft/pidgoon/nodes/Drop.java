@@ -7,6 +7,9 @@ import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.Store;
 import org.pcollections.PMap;
 
+/**
+ * In byte parses causes the byte sequence matched by the trial to be erased from the matched data.
+ */
 public class Drop extends Node {
 	public final Node child;
 

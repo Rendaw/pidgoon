@@ -7,6 +7,10 @@ import com.zarbosoft.pidgoon.internal.Parent;
 import com.zarbosoft.pidgoon.internal.Store;
 import org.pcollections.PMap;
 
+/**
+ * Drop all current branches except this when the child node matches. This is for when you're sure this is the correct
+ * parse and want to save memory.
+ */
 public class Cut extends Node {
 	private final Node child;
 

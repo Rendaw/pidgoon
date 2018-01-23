@@ -9,6 +9,9 @@ import org.pcollections.PMap;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Recurse via the grammar rule of this name.
+ */
 public class Reference extends Node {
 
 	public class RefParent implements Parent {

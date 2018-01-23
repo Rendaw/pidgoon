@@ -9,6 +9,9 @@ import com.zarbosoft.pidgoon.internal.Store;
 import com.zarbosoft.pidgoon.nodes.Reference.RefParent;
 import org.pcollections.PMap;
 
+/**
+ * Matches any event/byte.
+ */
 public class Wildcard extends Node {
 	public String toString() {
 		return ".";
