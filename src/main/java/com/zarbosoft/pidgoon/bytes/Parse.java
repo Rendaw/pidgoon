@@ -54,6 +54,7 @@ public class Parse<O> extends BaseParse<Parse<O>> {
 
 	/**
 	 * Parse until the stream stops matching.
+	 *
 	 * @param stream
 	 * @return
 	 */

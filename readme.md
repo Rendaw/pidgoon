@@ -1,6 +1,8 @@
 # Pidgoon
 
-A Java GLR-like parser generator with tools to parse both byte streams and streams of arbitrary events (input events, tokens, tree nodes, etc).  It parses all branches simultaneously, has no ambiguity, and can handle left recursion if you have enough memory.
+A Java GLR-like parser generator with tools to parse both byte streams and streams of arbitrary events (input events, tokens, tree nodes, etc).  It has no lexer, parses all branches simultaneously, has no ambiguity, and can handle left recursion if you have enough memory.  Actually, that it _can_ have a lexer if you want.  You can even have two lexers, and nest them.
+
+Probably not particularly fast.
 
 Include with maven with:
 
